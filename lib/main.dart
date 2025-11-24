@@ -67,27 +67,20 @@
 
 
 ///////////////
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:madhanvasu_app/app/configuration/%20themes/app_colors.dart';
 import 'Feature-based/Landing_screens/landing_screen1.dart';
 import 'Feature-based/app_Language/app_translations.dart';
 import 'Feature-based/splash_screen/splashscreen.dart';
+import 'app/configuration/themes/app_colors.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Feature-based/home/home/home_page.dart';
-
-////// Background handler
-
-
-
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Background message received: ${message.messageId}');
@@ -124,21 +117,19 @@ Future<void> _initializeFCM() async {
     print('Notification permission not granted');
   }
 
-  /// Foreground messages
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('📲 Foreground message: ${message.notification?.title}');
+    print(' Foreground message: ${message.notification?.title}');
     if (message.notification != null) {
       Get.snackbar(
         message.notification!.title ?? "Notification",
         message.notification!.body ?? "",
         snackPosition: SnackPosition.TOP,
-        backgroundColor: AppColors.secondary,   //border
+        backgroundColor: AppColors.secondary,
         colorText: Colors.black,
       );
     }
   });
 
-  /// App opened via notification tap
   // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
   //   print(' Notification tapped (app resumed): ${message.notification?.title}');
   //   // Add navigation logic here if needed
@@ -280,45 +271,3 @@ class _DecideScreenState extends State<DecideScreen> {
   }
 }
 
-
-
-
-
-
-//////////////////////
-
-// import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import 'package:get/get.dart';
-// import 'Feature-based/home/categorys/categorys_controller/categorys_controller.dart';
-// import 'Feature-based/property/property_model/PropertyList_Screen.dart';
-// import 'Feature-based/property/property_model/property_controller.dart';
-//
-//
-// void main() {
-//   Get.put(CategoryController());
-//
-//   runApp(const MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider(create: (_) => PropertyController()),
-//       ],
-//       child: GetMaterialApp(
-//         title: 'Property Listing',
-//         theme: ThemeData(
-//           primarySwatch: Colors.blue,
-//           visualDensity: VisualDensity.adaptivePlatformDensity,
-//         ),
-//         home: const PropertyListScreen(),
-//         debugShowCheckedModeBanner: false,
-//       ),
-//     );
-//   }
-// }

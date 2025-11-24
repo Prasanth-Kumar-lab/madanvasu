@@ -1,4 +1,3 @@
-// lib/views/district_view.dart
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -57,7 +56,6 @@ class _DistrictViewState extends State<DistrictView> {
                 selectedDistrict = value;
               });
 
-              // You can do something with selectedDistrict
               if (value != null) {
                 Get.snackbar(
                   "Selected",
@@ -65,7 +63,6 @@ class _DistrictViewState extends State<DistrictView> {
                   snackPosition: SnackPosition.BOTTOM,
                 );
 
-                // Optionally navigate to mandal screen here...
               }
             },
           ),

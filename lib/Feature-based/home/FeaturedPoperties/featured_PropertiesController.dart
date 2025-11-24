@@ -15,7 +15,6 @@ class PropertiesController extends GetxController {
   var mandalsList = <Mandal>[].obs;
   var villagesList = <Village>[].obs;
 
-  // final ApiService _repository = ApiService();
 
   final ApiService _repository = ApiService();
 
@@ -26,6 +25,32 @@ class PropertiesController extends GetxController {
     super.onInit();
   }
 
+  // Future<void> fetchProperties() async {
+  //   try {
+  //     isLoading(true);
+  //
+  //     final wrapper = await _repository.PropertiesWrapper();
+  //
+  //     if (wrapper != null) {
+  //       final reversedList = (wrapper.properties ?? []).reversed.toList();
+  //       propertiesList.value = reversedList.take(20).toList();
+  //
+  //
+  //       propertiesList.value = wrapper.properties ?? [];
+  //       categoriesList.value = wrapper.propertiesCategories ?? [];
+  //       statesList.value = wrapper.states ?? [];
+  //       districtsList.value = wrapper.districts ?? [];
+  //       mandalsList.value = wrapper.mandals ?? [];
+  //       villagesList.value = wrapper.villages ?? [];
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar("Error", e.toString());
+  //   } finally {
+  //     isLoading(false);
+  //   }
+  // }
+
+
   Future<void> fetchProperties() async {
     try {
       isLoading(true);
@@ -33,12 +58,16 @@ class PropertiesController extends GetxController {
       final wrapper = await _repository.PropertiesWrapper();
 
       if (wrapper != null) {
-        propertiesList.value = wrapper.properties ?? [];
+        final reversedList = (wrapper.properties ?? []).reversed.toList();
+        propertiesList.value = reversedList.take(20).toList();
+
         categoriesList.value = wrapper.propertiesCategories ?? [];
         statesList.value = wrapper.states ?? [];
         districtsList.value = wrapper.districts ?? [];
         mandalsList.value = wrapper.mandals ?? [];
         villagesList.value = wrapper.villages ?? [];
+      } else {
+        print('Error: API returned null wrapper');
       }
     } catch (e) {
       Get.snackbar("Error", e.toString());
@@ -46,4 +75,5 @@ class PropertiesController extends GetxController {
       isLoading(false);
     }
   }
+
 }

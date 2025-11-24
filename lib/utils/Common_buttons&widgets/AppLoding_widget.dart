@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:madhanvasu_app/app/configuration/%20themes/app_colors.dart';
 
+import '../../app/configuration/themes/app_colors.dart';
 class CustomLoader extends StatefulWidget {
   const CustomLoader({super.key});
 

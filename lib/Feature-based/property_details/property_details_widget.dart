@@ -44,7 +44,6 @@ class _PropertyViewState extends State<PropertyView> {
 
         final property = model.propertyDetails!.first;
 
-        // Lookup methods
         String getStateName(String? id) =>
             model.states?.firstWhereOrNull((s) => s.id == id)?.name ?? 'N/A';
 
@@ -103,9 +102,8 @@ class _PropertyViewState extends State<PropertyView> {
           DetailRow(label: "Price", value: property.price ?? "-"),
           DetailRow(label: "Property Type", value: categoryTitle),
           DetailRow(label: "Property For", value: property.propertyFor ?? "-"),
-          DetailRow(label: "Property Status", value: property.propertyStatusId ?? "-"),
+          // DetailRow(label: "Property Status", value: property.propertyStatusId ?? "-"),
 
-          // Category-specific details
           if (categoryTitle == 'Apartment') ...[
             DetailRow(label: "Total Area", value: "${property.totalArea ?? '-'} Sq Ft"),
             DetailRow(label: "Built-up Area", value: "${property.builtupArea ?? '-'} Sq Ft"),
@@ -132,17 +130,19 @@ class _PropertyViewState extends State<PropertyView> {
           DetailRow(label: "Mandal", value: getMandalName(property.mandalId)),
           DetailRow(label: "District", value: getDistrictName(property.districtId)),
           DetailRow(label: "State", value: getStateName(property.stateId)),
+          DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
+
           DetailRow(label: "Pincode", value: property.pinCode ?? "-"),
           const SizedBox(height: 22),
 
-          sectionTitle("Additional Details"),
-          DetailRow(label: "Booking Amount", value: property.bookingAmount ?? "-"),
-          DetailRow(label: "Maintenance Charges", value: property.maintenanceCharges ?? "-"),
-          DetailRow(label: "RERA Number", value: property.reraNumber ?? "-"),
-          DetailRow(label: "Floor Plan Title", value: property.floorPlanTitle ?? "-"),
-          DetailRow(label: "Floor Plan Area", value: "${property.floorPlanArea ?? '-'} Sqft"),
-          DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
-          const SizedBox(height: 22),
+          // sectionTitle("Additional Details"),
+          // DetailRow(label: "Booking Amount", value: property.bookingAmount ?? "-"),
+          // DetailRow(label: "Maintenance Charges", value: property.maintenanceCharges ?? "-"),
+          // DetailRow(label: "RERA Number", value: property.reraNumber ?? "-"),
+          // DetailRow(label: "Floor Plan Title", value: property.floorPlanTitle ?? "-"),
+          // DetailRow(label: "Floor Plan Area", value: "${property.floorPlanArea ?? '-'} Sqft"),
+          // DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
+          // const SizedBox(height: 22),
 
           sectionTitle("Agent / Entry Info"),
           DetailRow(label: "Person Name", value: property.personName ?? "-"),
@@ -168,7 +168,6 @@ class _PropertyViewState extends State<PropertyView> {
   );
 }
 
-/// Reusable detail row widget
 class DetailRow extends StatelessWidget {
   final String label;
   final String value;

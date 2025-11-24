@@ -8,5 +8,5 @@ IconData getIconDataFromHtml(String html) {
   if (html.contains('fa-list-alt')) return FontAwesomeIcons.listAlt;
   if (html.contains('fa-address-card-o')) return FontAwesomeIcons.addressCard;
 
-  return FontAwesomeIcons.circleQuestion; // default/fallback icon
+  return FontAwesomeIcons.circleQuestion;
 }

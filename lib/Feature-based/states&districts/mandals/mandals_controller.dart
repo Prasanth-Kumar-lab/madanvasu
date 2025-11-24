@@ -1,8 +1,6 @@
-// lib/controllers/mandal_controller.dart
-
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+
+import '../../../data/Api_services/user_api_services.dart';
 import 'mandals_model.dart';
 
 class MandalController extends GetxController {
@@ -15,34 +13,18 @@ class MandalController extends GetxController {
   }) async {
     isLoading(true);
 
-    var headers = {
-      'Cookie': 'ci_session=152b862654e76b26067650896768ba8b7d5d7afe',
-    };
-
-    var request = http.Request(
-      'GET',
-      Uri.parse('https://madanvasu.in/new/apis/Api_mandals/get_mandals?state_id=$stateId&district_id=$districtId'),
-    );
-
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      var jsonData = json.decode(responseBody);
-
-      MandalNameModel model = MandalNameModel.fromJson(jsonData);
-      mandalList.assignAll(model.data);
-    } else {
-      Get.snackbar("Error", " Your selected area was not in your range . Failed to load mandals");
+    try {
+      final mandals = await ApiService.fetchMandals(stateId: stateId, districtId: districtId);
+      mandalList.assignAll(mandals);
+    } catch (e) {
+      Get.snackbar("Error", "Your selected area was not in your range. Failed to load mandals");
+    } finally {
+      isLoading(false);
     }
-
-    isLoading(false);
   }
 
   void clearMandals() {
     mandalList.clear();
   }
-
 }
+

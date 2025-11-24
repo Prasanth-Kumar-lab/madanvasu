@@ -56,7 +56,6 @@ class PropertyDetailsModel {
   };
 }
 
-// Main data object
 class PropertyDetails {
   final String? id;
   final String? addedDateTime;
@@ -246,7 +245,7 @@ class PropertyDetails {
     floorPlanTitle: json['floor_plan_title'],
     floorPlanArea: json['floor_plan_area'],
     floorPlanImage: json['floor_plan_image'],
-    floorPlanDescription: json['floor_plan_description'],
+    floorPlanDescription: json['description'],
     propertyStatusId: json['property_status_id'],
     active: json['active'],
     approved: json['approved'],
@@ -316,7 +315,7 @@ class PropertyDetails {
     'floor_plan_title': floorPlanTitle,
     'floor_plan_area': floorPlanArea,
     'floor_plan_image': floorPlanImage,
-    'floor_plan_description': floorPlanDescription,
+    'description': floorPlanDescription,
     'property_status_id': propertyStatusId,
     'active': active,
     'approved': approved,
@@ -337,7 +336,6 @@ class PropertyDetails {
   };
 }
 
-// Supporting models
 class PropertiesCategory {
   final String? id;
   final String? title;

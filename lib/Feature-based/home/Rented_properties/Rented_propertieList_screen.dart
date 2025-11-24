@@ -171,8 +171,9 @@ class RentedPropertyListScreen extends StatelessWidget {
                     return FeaturedPropertyCard(
                       title: property.title ?? 'N/A',
                       price: property.price != null
-                          ? '₹${property.price} / month'
+                          ? '₹${property.price}${property.propertyFor == 'Rent' ? ' / month' : ''}'
                           : 'N/A',
+
                       location: location,
                       isHorizontal: false,
                       primaryColor: primaryColor,

@@ -1,4 +1,3 @@
-// my_properties_list_model.dart
 class MyPropertyList {
   bool status;
   MyPropertyListData? data;
@@ -129,6 +128,7 @@ class Properties {
   String? active;
   String? approved;
   String? postedDate;
+  String? planStartDate;
   String? planExpiryDate;
   String? propertyPlan;
   String? totalPlanPrice;
@@ -195,6 +195,7 @@ class Properties {
     this.active,
     this.approved,
     this.postedDate,
+    this.planStartDate,
     this.planExpiryDate,
     this.propertyPlan,
     this.totalPlanPrice,
@@ -262,6 +263,8 @@ class Properties {
         active = json['active']?.toString(),
         approved = json['approved']?.toString(),
         postedDate = json['posted_date']?.toString(),
+        planStartDate = json['plan_start_date']?.toString(), ////
+
         planExpiryDate = json['plan_expiry_date']?.toString(),
         propertyPlan = json['property_plan']?.toString(),
         totalPlanPrice = json['total_plan_price']?.toString(),
@@ -329,6 +332,7 @@ class Properties {
       'active': active,
       'approved': approved,
       'posted_date': postedDate,
+      'plan_start_date': planStartDate,
       'plan_expiry_date': planExpiryDate,
       'property_plan': propertyPlan,
       'total_plan_price': totalPlanPrice,

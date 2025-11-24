@@ -1,4 +1,3 @@
-// lib/views/village_view.dart
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +19,6 @@ class VillageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final VillageController controller = Get.find();
 
-    // Load data once on view open
     controller.fetchVillages(
       stateId: stateId,
       districtId: districtId,

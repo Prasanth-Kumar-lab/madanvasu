@@ -1,4 +1,3 @@
-// lib/views/mandal_view.dart
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +18,6 @@ class MandalView extends StatelessWidget {
   Widget build(BuildContext context) {
     final MandalController controller = Get.find();
 
-    // Fetch mandals once on screen open
     controller.fetchMandals(stateId: stateId, districtId: districtId);
 
     return Scaffold(

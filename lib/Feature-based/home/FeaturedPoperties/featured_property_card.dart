@@ -40,7 +40,6 @@ class FeaturedPropertyCard extends StatefulWidget {
 class _FeaturedPropertyCardState extends State<FeaturedPropertyCard> {
   final favoriteController = Get.put(FavoritePropertiesController(ApiService()));
 
-  // FavoritePropertiesController? favoriteController;
 
   String? userId;
 
@@ -119,15 +118,13 @@ class _FeaturedPropertyCardState extends State<FeaturedPropertyCard> {
           );
         }
       } else {
-        // Add to favorites
         final result = await ApiService.addFavoriteProperty(
           userId: userId!,
           propertyId: widget.propertyId,
         );
 
-        // Assuming API returns a response like {"status":true, "message":"..."}
         if (result['status'] == true) {
-          favoriteController!.favoriteIds.add(widget.propertyId); // Update UI
+          favoriteController!.favoriteIds.add(widget.propertyId);
           Get.snackbar(
             'Success',
             result['message'] ?? 'Added to favorites',

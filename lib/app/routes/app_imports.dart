@@ -30,8 +30,8 @@ export '../../Feature-based/splash_screen/splashscreen.dart';
 // export '../../Feature-based/home/home/home_page.dart';
 
 // Other UI Screens
-export '../../madhanvasu_lib/ui_screens/post_propertys.dart';
-export '../../madhanvasu_lib/ui_screens/saved_propertys.dart';
+// export '../../madhanvasu_lib/ui_screens/post_propertys.dart';
+// export '../../madhanvasu_lib/ui_screens/saved_propertys.dart';
 
 export '../../Feature-based/auth/registration/register_bindings/reg_binding.dart';
 

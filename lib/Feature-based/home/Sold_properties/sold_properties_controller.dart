@@ -24,15 +24,19 @@ class SoldPropertiesController extends GetxController {
     try {
       isLoading(true);
 
-      final wrapper = await _repository.Sold_PropertiesWrapper(); // Ensure this exists in your API service
+      final wrapper = await _repository.Sold_PropertiesWrapper();
 
       if (wrapper != null) {
-        propertiesList.value = wrapper.properties ?? [];
+        final reversedList = (wrapper.properties ?? []).reversed.toList();
+        propertiesList.value = reversedList.take(20).toList();
+
         categoriesList.value = wrapper.propertiesCategories ?? [];
         statesList.value = wrapper.states ?? [];
         districtsList.value = wrapper.districts ?? [];
         mandalsList.value = wrapper.mandals ?? [];
         villagesList.value = wrapper.villages ?? [];
+      } else {
+        print('Error: API returned null wrapper');
       }
     } catch (e) {
       Get.snackbar("Error", e.toString());

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
-
-import '../../../app/configuration/ themes/app_colors.dart';
+import '../../../app/configuration/themes/app_colors.dart';
 import 'Privacy_policy_controller.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -58,7 +57,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
               "br": Style(
-                // display: Display.NONE, // Hide any <br> tags if they cause extra space
+                // display: Display.NONE,
               ),
             },
           ),

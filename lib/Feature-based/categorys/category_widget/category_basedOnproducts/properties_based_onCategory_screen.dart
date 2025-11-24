@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../../app/configuration/ themes/app_colors.dart';
 import '../../../home/FeaturedPoperties/featured_property_card.dart';
 import '../../../property_details/property_details.dart';
 import 'category_basedon_controller.dart';

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
-
-import '../../../app/configuration/ themes/app_colors.dart';
+import '../../../app/configuration/themes/app_colors.dart';
 import 'About_us_controller.dart';
 
 class AboutUsScreen extends StatelessWidget {

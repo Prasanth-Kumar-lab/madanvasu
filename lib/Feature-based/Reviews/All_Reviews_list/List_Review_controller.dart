@@ -8,12 +8,12 @@ class PropertyReviewController extends GetxController {
   var isLoading = false.obs;
   var reviewData = Rxn<ReviewData>();
 
-  final String propertyId = '14'; // Could be passed dynamically in future
+  final String propertyId = '14';
 
   @override
   void onInit() {
     super.onInit();
-    fetchReviews(); // No parameter needed now
+    fetchReviews();
   }
 
   Future<void> fetchReviews() async {

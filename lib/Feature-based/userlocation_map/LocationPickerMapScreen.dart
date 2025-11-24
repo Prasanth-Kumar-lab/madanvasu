@@ -64,7 +64,7 @@ class _LocationPickerMapScreenState extends State<LocationPickerMapScreen> {
       ),
       body: GoogleMap(
         initialCameraPosition: const CameraPosition(
-          target: LatLng(17.385044, 78.486671), // Hyderabad default
+          target: LatLng(17.385044, 78.486671),
           zoom: 14,
         ),
         markers: _marker != null ? {_marker!} : {},

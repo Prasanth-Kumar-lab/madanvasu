@@ -9,7 +9,7 @@ class PropertyController extends GetxController {
   var errorMessage = ''.obs;
 
   Future<void> fetchPropertyDetails(String propertyId) async {
-    print(' Starting fetch for propertyId: $propertyId');  // Debug start
+    print(' Starting fetch for propertyId: $propertyId');
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -26,11 +26,11 @@ class PropertyController extends GetxController {
 
       final response = await request.send();
 
-      print('Response status code: ${response.statusCode}'); // Debug status code
+      print('Response status code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final responseBody = await response.stream.bytesToString();
-        print('Response body:\n$responseBody');  // Debug full response body
+        print('Response body:\n$responseBody');
 
         final decodedJson = json.decode(responseBody);
         propertyDetailsModel.value = PropertyDetailsModel.fromJson(decodedJson);
@@ -50,3 +50,41 @@ class PropertyController extends GetxController {
     }
   }
 }
+
+
+
+
+/////////////
+
+
+////////////////////////////////////////
+
+
+// import 'package:get/get.dart';
+//
+// import '../../data/Api_services/user_api_services.dart';
+// import 'Property_details_model.dart';
+//
+// class PropertyController extends GetxController {
+//   var isLoading = false.obs;
+//   var propertyDetailsModel = Rxn<PropertyDetailsModel>();
+//   var errorMessage = ''.obs;
+//
+//   Future<void> fetchPropertyDetails(String propertyId) async {
+//     print(' Starting fetch for propertyId: $propertyId');
+//     isLoading.value = true;
+//     errorMessage.value = '';
+//
+//     final result = await ApiService.fetchPropertyDetails(propertyId);
+//
+//     if (result != null) {
+//       propertyDetailsModel.value = result;
+//     } else {
+//       errorMessage.value = 'Failed to load property details.';
+//       propertyDetailsModel.value = null;
+//     }
+//
+//     isLoading.value = false;
+//     print(' Fetch complete');
+//   }
+// }

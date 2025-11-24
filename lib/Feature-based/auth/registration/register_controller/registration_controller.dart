@@ -1,54 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:madhanvasu_app/data/Api_services/user_api_services.dart';
-//
-// import '../../login_view/loginScreen.dart';
-//
-// class RegistrationController extends GetxController {
-//   final name = ''.obs;
-//   final email = ''.obs;
-//   final phone = ''.obs;
-//   final password = ''.obs;
-//   final confirmPassword = ''.obs();
-//   final obscurePassword = true.obs;
-//   final obscureConfirm = true.obs;
-//   final agreed = false.obs;
-//
-//   final formKey = GlobalKey<FormState>();
-//
-//   void togglepassword() => obscurePassword.toggle();
-//   void toggleConfirm() => obscureConfirm.toggle();
-//   void toggleAgree(bool? v) => agreed(v ?? false);
-//
-//   Future<void> register() async {
-//     if (!agreed.value) {
-//       Get.snackbar('Error', 'You must agree to the Terms & Conditions',
-//           backgroundColor: Colors.red, colorText: Colors.white);
-//       return;
-//     }
-//     if (!formKey.currentState!.validate()) return;
-//
-//     final success = await ApiService.registerUser(
-//       name: name.value.trim(),
-//       email: email.value.trim(),
-//       phone: phone.value.trim(),
-//       password: password.value.trim(),
-//     );
-//
-//     if (success) {
-//       Get.snackbar('Success', 'Registration successful! Please login.',
-//           backgroundColor: Colors.green, colorText: Colors.white);
-//       Get.offAll(() => Login_Screen(toggleTheme: () {}));
-//     } else {
-//       Get.snackbar('Error', 'Registration failed! Please try again.',
-//           backgroundColor: Colors.red, colorText: Colors.white);
-//     }
-//   }
-// }
-
-
-
-/////////
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -65,27 +14,23 @@ import '../../../states&districts/villages/villages_model.dart';
 import '../../login_view/loginScreen.dart';
 
 class RegistrationController extends GetxController {
-  // User input fields
   final name = ''.obs;
   final email = ''.obs;
   final phone = ''.obs;
   final password = ''.obs;
   final confirmPassword = ''.obs;
 
-  // UI controls
   final obscurePassword = true.obs;
   final obscureConfirm = true.obs;
   final agreed = false.obs;
 
   final formKey = GlobalKey<FormState>();
 
-  // Put state and district controllers
   final stateController = Get.put(StateController());
   final districtController = Get.put(DistrictController());
   final MandalController mandalController = Get.put(MandalController());
   final VillageController villageController = Get.put(VillageController());
 
-// Selected items
   final selectedState = Rxn<StatesModelData>();
   final selectedDistrict = Rxn<DistrictData>();
   var selectedMandal = Rx<MandalData?>(null);

@@ -41,7 +41,6 @@ class CustomContactBottomSheet extends StatelessWidget {
                       color: Color(0xFFe57c42))),
               const SizedBox(height: 16),
 
-              // Phone number
               InkWell(
                 onTap: onCallTap,
                 onLongPress: () {
@@ -59,7 +58,6 @@ class CustomContactBottomSheet extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Email
               InkWell(
                 onTap: onEmailTap,
                 onLongPress: () {
@@ -77,7 +75,6 @@ class CustomContactBottomSheet extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Address
               InkWell(
                 onLongPress: () {
                   Clipboard.setData(ClipboardData(text: address));

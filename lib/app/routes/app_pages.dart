@@ -1,29 +1,5 @@
-// import 'package:get/get.dart';
-// import '../../Feature-based/Landing_screens/landing_screen1.dart';
-// import '../../Feature-based/Landing_screens/landing_screen2.dart';
-// import '../../Feature-based/auth/auth_binding/login_bindings.dart';
-// import '../../Feature-based/auth/login_view/loginScreen.dart';
-// import '../../Feature-based/auth/registration/register_bindings/reg_binding.dart';
-// import '../../Feature-based/auth/registration/registration_screen.dart';
-// import '../../Feature-based/forget_password/foget_password.dart';
-// import '../../Feature-based/categorys/category_widget/category_widget_view.dart';
-// import '../../Feature-based/categorys/categorys_binding/categorys_binding.dart';
-// import '../../Feature-based/home/Available_properties/Available_properties_widget.dart';
-// import '../../Feature-based/home/FeaturedPoperties/PropertiesBinding.dart';
-// import '../../Feature-based/home/FeaturedPoperties/featured_properties_widget.dart';
-// import '../../Feature-based/profile/profile_binding/profile_binding.dart';
-// import '../../Feature-based/profile/profile_page.dart';
-// import '../../Feature-based/splash_screen/splashscreen.dart';
-// import '../../Feature-based/home/home/home_page.dart';
-// import '../../madhanvasu_lib/ui_screens/post_propertys.dart';
-// import '../../madhanvasu_lib/ui_screens/saved_propertys.dart';
-// import '../../main.dart';
-// import 'app_routes.dart';
 
-// import '../../Feature-based/auth/registration/register_bindings/reg_binding.dart';
-// import '../../Feature-based/home/home/home_page.dart';
 import 'package:flutter/material.dart';
-
 import '../../Feature-based/MY_properties_list/my_property_list_screen.dart';
 import '../../Feature-based/Reviews/All_Reviews_list/List_Review_binding.dart';
 import '../../Feature-based/Reviews/All_Reviews_list/List_Review_widget.dart';
@@ -143,11 +119,11 @@ class AppPages {
       binding: CategoryBinding(),
     ),
 
-    GetPage(
-      name:AppRoutes.postproperties,
-      page: () => const PostPropertyScreen(),
-      // binding: CategoryBinding(),
-    ),
+    // GetPage(
+    //   name:AppRoutes.postproperties,
+    //   page: () => const PostPropertyScreen(),
+    //   // binding: CategoryBinding(),
+    // ),
 
     GetPage(
       name: AppRoutes.savedproperties,

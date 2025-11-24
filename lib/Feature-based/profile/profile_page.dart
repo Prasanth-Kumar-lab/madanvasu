@@ -470,9 +470,8 @@ import 'package:madhanvasu_app/Feature-based/profile/profile_controller/profile_
 import 'package:madhanvasu_app/Feature-based/app_Language/app_language_screen.dart';
 import 'package:madhanvasu_app/Feature-based/profile/terms&Conditions/terms&Conditions_screen.dart';
 import '../../../utils/shared_pref_helper.dart';
-import '../../app/configuration/ themes/app_colors.dart';
+import '../../app/configuration/themes/app_colors.dart';
 import '../../app/routes/app_routes.dart';
-import '../../madhanvasu_lib/aswini_screens/property_listings.dart';
 import '../../utils/Common_buttons&widgets/AppLoding_widget.dart';
 import '../MY_properties_list/my_property_list_screen.dart';
 import 'about_us/Aboutus_screen.dart';

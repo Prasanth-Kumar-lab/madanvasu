@@ -1,4 +1,3 @@
-// lib/bindings/district_binding.dart
 
 import 'package:get/get.dart';
 

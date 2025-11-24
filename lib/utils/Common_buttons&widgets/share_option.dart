@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class share_options extends StatelessWidget {
   final String phoneNumber;
   final String email;
-  final VoidCallback? onBack; // callback to go back to contact details
+  final VoidCallback? onBack;
 
   const share_options({
     Key? key,

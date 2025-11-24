@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'List_Review_controller.dart';
-import 'List_Reviews_model.dart'; // your controller import
+import 'List_Reviews_model.dart';
 
 class PropertyReviewWidget extends StatefulWidget {
   @override
@@ -41,7 +41,6 @@ class _PropertyReviewWidgetState extends State<PropertyReviewWidget> {
       final reviews = controller.reviewData.value?.propertyReviews ?? [];
       final users = controller.reviewData.value?.userDetails ?? [];
 
-      // Ensure isTranslatedList length matches reviews
       if (isTranslatedList.length != reviews.length) {
         isTranslatedList = List<bool>.filled(reviews.length, false);
       }

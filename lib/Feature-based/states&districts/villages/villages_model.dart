@@ -31,7 +31,7 @@ class VillageData {
   final String districtId;
   final String mandalId;
   final String villageName;
-  final String? pinCode; // Made nullable since it may be null
+  final String? pinCode;
   final String activeStatus;
 
   VillageData({

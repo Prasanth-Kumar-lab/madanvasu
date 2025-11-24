@@ -109,7 +109,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../app/configuration/ themes/app_colors.dart';
+import '../../../app/configuration/themes/app_colors.dart';
 import '../../app/routes/app_routes.dart';
 import '../../utils/Common_buttons&widgets/CustomButton.dart';
 import '../../utils/size_config.dart';

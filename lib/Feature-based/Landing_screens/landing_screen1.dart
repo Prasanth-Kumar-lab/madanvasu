@@ -120,7 +120,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../app/configuration/ themes/app_colors.dart';
+import '../../../app/configuration/themes/app_colors.dart';
 import '../../app/routes/app_routes.dart';
 import '../../utils/Common_buttons&widgets/CustomButton.dart';
 
@@ -134,7 +134,6 @@ class Landing_screen_1 extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -166,7 +165,6 @@ class Landing_screen_1 extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo with rounded corners and shadow
                     Container(
                       height: 200,
                       width: 300,
@@ -190,7 +188,7 @@ class Landing_screen_1 extends StatelessWidget {
 
                     // Title
                     Text(
-                      'Post Property for just ₹2',
+                      'Post Property for just ₹5',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28,
@@ -202,9 +200,8 @@ class Landing_screen_1 extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // Descriptive Texts
                     _buildInfoText(
-                        'List your property at an unbeatable price of just ₹2.'),
+                        'List your property at an unbeatable price of just ₹5.'),
                     _buildInfoText(
                         'Reach thousands of potential buyers and renters instantly.'),
                     _buildInfoText(
@@ -212,7 +209,6 @@ class Landing_screen_1 extends StatelessWidget {
 
                     const SizedBox(height: 40),
 
-                    // Skip Button
                     CustomButton(
                       text: 'Skip',
                       isLoading: false,

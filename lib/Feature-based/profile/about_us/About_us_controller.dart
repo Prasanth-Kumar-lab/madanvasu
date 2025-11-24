@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
+
+import '../../../data/Api_services/user_api_services.dart';
 
 class AboutUsController extends GetxController {
   var isLoading = true.obs;
@@ -8,38 +8,26 @@ class AboutUsController extends GetxController {
   var aboutDescription = ''.obs;
   var aboutImage = ''.obs;
 
+  final ApiService _apiService = ApiService();
+
   @override
-  void onInit(){
+  void onInit() {
     super.onInit();
     fetchAboutUs();
   }
 
   Future<void> fetchAboutUs() async {
+    isLoading(true);
     try {
-      isLoading(true);
-      var headers = {
-        'Cookie': 'ci_session=f985237c86535f1740b72b4b830249eb1991839d'
-      };
-      var request = http.Request('GET',
-          Uri.parse('https://madanvasu.in/new/apis/Api_aboutus/getaboutus'));
+      final data = await _apiService.fetchAboutUsData();
 
-      request.headers.addAll(headers);
-
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final data = jsonDecode(responseBody);
-
-        if (data['status'] == true && data['data'].isNotEmpty) {
-          aboutTitle.value = data['data'][0]['about_title'];
-          aboutDescription.value = data['data'][0]['about_desc'];
-          aboutImage.value = data['data'][0]['about_image'];
-        } else {
-          aboutDescription.value = 'No about us data available';
-        }
+      if (data != null && data['status'] == true && data['data'].isNotEmpty) {
+        final aboutData = data['data'][0];
+        aboutTitle.value = aboutData['about_title'];
+        aboutDescription.value = aboutData['about_desc'];
+        aboutImage.value = aboutData['about_image'];
       } else {
-        aboutDescription.value = 'Failed: ${response.reasonPhrase}';
+        aboutDescription.value = 'No about us data available';
       }
     } catch (e) {
       aboutDescription.value = 'Error: $e';
