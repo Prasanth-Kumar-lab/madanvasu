@@ -18,7 +18,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
   final Color primaryColor;
   final Color bottomNavbarColor;
   final Color cardColor;
-
   const CustomBottomNavigationBar({
     Key? key,
     required this.currentIndex,
@@ -27,7 +26,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
     required this.bottomNavbarColor,
     required this.cardColor,
   }) : super(key: key);
-
   void navigateToCreatePropertyScreen(BuildContext context) {
     Get.put(StateController());
     Get.put(DistrictController());
@@ -169,78 +167,80 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                SafeArea(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                    ),
-                    icon: const Icon(Icons.logout, color: Colors.white),
-                    label: const Text(
-                      'Logout',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              title: Row(
-                                children: const [
-                                  Icon(Icons.logout, color: Colors.redAccent),
-                                  SizedBox(width: 8),
-                                  Text("Confirm Logout",
-                                    style: TextStyle(fontSize: 18),
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      label: const Text(
+                        'Logout',
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                title: Row(
+                                  children: const [
+                                    Icon(Icons.logout, color: Colors.redAccent),
+                                    SizedBox(width: 8),
+                                    Text("Confirm Logout",
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ],
+                                ),
+                                content: const Text(
+                                  "Are you sure you want to log out?",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                actions: [
+                                  // Cancel Button
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.grey[700],
+                                      textStyle: const TextStyle(fontSize: 16),
+                                    ),
+                                    child: const Text("Cancel"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+
+                                  // Logout Button
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.redAccent,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text("Logout", style: TextStyle(fontSize: 16)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.pop(context);
+                                      Get.offAllNamed('/login');
+                                    },
                                   ),
                                 ],
-                              ),
-                              content: const Text(
-                                "Are you sure you want to log out?",
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              actions: [
-                                // Cancel Button
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: Colors.grey[700],
-                                    textStyle: const TextStyle(fontSize: 16),
-                                  ),
-                                  child: const Text("Cancel"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-
-                                // Logout Button
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text("Logout", style: TextStyle(fontSize: 16)),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.pop(context);
-                                    Get.offAllNamed('/login');
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
+                              );
+                            },
+                          );
+                        }
+                    ),
                   ),
                 ),
               ],

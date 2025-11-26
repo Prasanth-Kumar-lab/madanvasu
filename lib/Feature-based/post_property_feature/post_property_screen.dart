@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:madhanvasu_app/endpoints/endpoints.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'dart:convert';
 import '../../../app/configuration/themes/app_colors.dart';
@@ -50,6 +51,8 @@ class CreatePropertyController extends GetxController {
   final reraNumberController = TextEditingController();
   final streetNameController = TextEditingController();
   final pinCodeController = TextEditingController();
+  final propertyPlanController = Get.put(PropertyPlanController());
+  final customerPlanController = Get.put(CustomerPlanController());
   // final longitudeController = TextEditingController(text: '78.1245');
   final longitudeController = TextEditingController();
   // final latitudeController = TextEditingController(text: '78.1245');
@@ -318,32 +321,7 @@ class CreatePropertyController extends GetxController {
           propertyId.value = responseData['property_id'].toString();
           Get.snackbar('Success', 'Property created successfully!', backgroundColor: Colors.green, colorText: Colors.white);
 
-          // Reset form
-          titleController.clear();
-          propertyForController.clear();
-          propertyCategoryController.clear();
-          propertyStatusController.clear();
-          priceController.clear();
-          bookingAmountController.clear();
-          maintenanceChargesController.clear();
-          reraNumberController.clear();
-          streetNameController.clear();
-          pinCodeController.clear();
-          longitudeController.clear();
-          latitudeController.clear();
-          floorPlanTitleController.clear();
-          floorPlanAreaController.clear();
-          floorPlanDescriptionController.clear();
-          clearCategorySpecificFields();
-          selectedState.value = null;
-          selectedDistrict.value = null;
-          selectedMandal.value = null;
-          selectedVillage.value = null;
-          selectedCategory.value = null;
-          selectedPropertyFor.value = null;
-          selectedPropertyStatus.value = null;
-          currentStep.value = 0;
-
+          // DO NOT reset form fields here - keep them until payment is complete
           return true;
         } else {
           Get.snackbar('Error', 'Failed: $responseBody', backgroundColor: Colors.red, colorText: Colors.white);
@@ -360,6 +338,35 @@ class CreatePropertyController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+// Add this method to clear form only when payment is successful
+  void clearFormAfterSuccessfulPayment() {
+    titleController.clear();
+    propertyForController.clear();
+    propertyCategoryController.clear();
+    propertyStatusController.clear();
+    priceController.clear();
+    bookingAmountController.clear();
+    maintenanceChargesController.clear();
+    reraNumberController.clear();
+    streetNameController.clear();
+    pinCodeController.clear();
+    longitudeController.clear();
+    latitudeController.clear();
+    floorPlanTitleController.clear();
+    floorPlanAreaController.clear();
+    floorPlanDescriptionController.clear();
+    clearCategorySpecificFields();
+    selectedState.value = null;
+    selectedDistrict.value = null;
+    selectedMandal.value = null;
+    selectedVillage.value = null;
+    selectedCategory.value = null;
+    selectedPropertyFor.value = null;
+    selectedPropertyStatus.value = null;
+    currentStep.value = 0;
+    propertyId.value = null;
   }
 
   @override
@@ -1793,6 +1800,8 @@ class CreatePropertyController extends GetxController {
 // }
 
 
+
+
 class CreateProperty_Screen extends StatelessWidget {
   const CreateProperty_Screen({super.key});
 
@@ -1815,6 +1824,7 @@ class CreateProperty_Screen extends StatelessWidget {
           controller: controller,
           readOnly: readOnly,
           maxLines: maxLines,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
@@ -1825,14 +1835,10 @@ class CreateProperty_Screen extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             prefixIcon: Icon(Icons.edit, color: AppColors.secondary),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
-          keyboardType: keyboardType,
           validator: validator,
-          onChanged: onChanged != null ? (value) => onChanged() : null,
-          onSaved: (value) {
-            if (value != null) controller.text = value;
-          },
+          onChanged: onChanged != null ? (_) => onChanged() : null,
         ),
       ),
     );
@@ -1843,22 +1849,15 @@ class CreateProperty_Screen extends StatelessWidget {
     final controller = Get.put(CreatePropertyController());
     final propertyStatusController = Get.put(PropertyStatusController());
     final categoryController = Get.find<CategoryController>();
-    final propertyPlanController = Get.put(PropertyPlanController());
-    final customerPlanController = Get.put(CustomerPlanController());
     final propertyPriceController = PropertyPriceController();
     final formKey = GlobalKey<FormState>();
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.primary.withOpacity(0.9),
         title: const Text(
           'List A Property',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 2,
@@ -1870,859 +1869,519 @@ class CreateProperty_Screen extends StatelessWidget {
 
         return Form(
           key: formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
-                child: Text(
-                  'Property Details',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
-                ),
-              ),
-              _buildTextField(
-                controller: controller.titleController,
-                label: 'Property Title',
-                validator: (val) => val!.isEmpty ? 'Required' : null,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Card(
-                  elevation: 4,
-                  shadowColor: Colors.grey.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Property For',
-                      labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Property Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                const SizedBox(height: 16),
+
+                _buildTextField(controller: controller.titleController, label: 'Property Title', validator: (val) => val!.isEmpty ? 'Required' : null),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Card(
+                    elevation: 4,
+                    shadowColor: Colors.grey.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Property For',
+                        labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        prefixIcon: Icon(Icons.category, color: AppColors.secondary),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       ),
-                      prefixIcon: Icon(Icons.category, color: AppColors.secondary),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      value: controller.selectedPropertyFor.value?.isNotEmpty == true ? controller.selectedPropertyFor.value : null,
+                      items: ['Sell', 'Rent'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                      onChanged: (v) {
+                        controller.selectedPropertyFor.value = v;
+                        controller.propertyForController.text = v ?? '';
+                        controller._syncPropertyForController();
+                      },
+                      validator: (v) => v == null ? 'Please select property for' : null,
                     ),
-                    value: controller.selectedPropertyFor.value?.isNotEmpty == true
-                        ? controller.selectedPropertyFor.value
-                        : null,
-                    items: ['Sell', 'Rent'].map((propertyFor) {
-                      return DropdownMenuItem<String>(
-                        value: propertyFor,
-                        child: Text(propertyFor),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      controller.selectedPropertyFor.value = newValue;
-                      controller.propertyForController.text = newValue ?? '';
-                      controller._syncPropertyForController();
-                    },
-                    validator: (val) => val == null || val.isEmpty ? 'Please select property for' : null,
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Card(
-                  elevation: 4,
-                  shadowColor: Colors.grey.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: 'Property Category',
-                      labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Card(
+                    elevation: 4,
+                    shadowColor: Colors.grey.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: 'Property Category',
+                        labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        prefixIcon: Icon(Icons.category, color: AppColors.secondary),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       ),
-                      prefixIcon: Icon(Icons.category, color: AppColors.secondary),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      value: controller.propertyCategoryController.text.isNotEmpty ? controller.propertyCategoryController.text : null,
+                      items: categoryController.categories
+                          .map((c) => DropdownMenuItem(value: c.id, child: Text(c.propertyCategoryTitle)))
+                          .toList(),
+                      onChanged: (v) {
+                        if (v != null) {
+                          controller.propertyCategoryController.text = v;
+                          final cat = categoryController.categories.firstWhere((e) => e.id == v);
+                          controller.updateCategoryData(cat);
+                          controller._syncCategoryController();
+                        }
+                      },
+                      validator: (v) => v == null ? 'Please select a category' : null,
                     ),
-                    value: controller.propertyCategoryController.text.isNotEmpty
-                        ? controller.propertyCategoryController.text
-                        : null,
-                    items: categoryController.categories.map((category) {
-                      return DropdownMenuItem<String>(
-                        value: category.id,
-                        child: Text(category.propertyCategoryTitle),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      if (newValue != null) {
-                        controller.propertyCategoryController.text = newValue;
-                        final selectedCategory = categoryController.categories
-                            .firstWhere((cat) => cat.id == newValue);
-                        controller.updateCategoryData(selectedCategory);
-                        controller._syncCategoryController();
-                      }
-                    },
-                    validator: (val) => val == null || val.isEmpty ? 'Please select a category' : null,
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Card(
-                  elevation: 4,
-                  shadowColor: Colors.grey.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  child: DropdownButtonFormField<String>(
-                    isExpanded: true,
-                    decoration: InputDecoration(
-                      labelText: 'Property Status',
-                      labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Card(
+                    elevation: 4,
+                    shadowColor: Colors.grey.withOpacity(0.2),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: 'Property Status',
+                        labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        prefixIcon: Icon(Icons.info, color: AppColors.secondary),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       ),
-                      prefixIcon: Icon(Icons.info, color: AppColors.secondary),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      value: controller.selectedPropertyStatus.value?.isNotEmpty == true ? controller.selectedPropertyStatus.value : null,
+                      items: propertyStatusController.propertyStatusList
+                          .map((s) => DropdownMenuItem(value: s.id, child: Text(s.propertyStatus)))
+                          .toList(),
+                      onChanged: (v) {
+                        controller.selectedPropertyStatus.value = v;
+                        controller.propertyStatusController.text = v ?? '';
+                        controller._syncPropertyStatusController();
+                      },
+                      validator: (v) => v == null ? 'Please select a status' : null,
                     ),
-                    value: controller.selectedPropertyStatus.value?.isNotEmpty == true
-                        ? controller.selectedPropertyStatus.value
-                        : null,
-                    items: propertyStatusController.propertyStatusList.map((status) {
-                      return DropdownMenuItem<String>(
-                        value: status.id,
-                        child: Text(status.propertyStatus),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      controller.selectedPropertyStatus.value = newValue;
-                      controller.propertyStatusController.text = newValue ?? '';
-                      controller._syncPropertyStatusController();
-                    },
-                    validator: (val) => val == null || val.isEmpty ? 'Please select a status' : null,
                   ),
                 ),
-              ),
-              _buildTextField(
-                controller: controller.priceController,
-                label: 'Asking Price',
-                keyboardType: TextInputType.number,
-                // inputFormatters: [IndianCurrencyInputFormatter()],
-                validator: (val) => val!.isEmpty ? 'Required' : null,
-              ),
 
-              _buildTextField(
-        controller: controller.floorPlanDescriptionController,
-        label: 'Description',
-        maxLines: 4,
-        ),
+                _buildTextField(controller: controller.priceController, label: 'Asking Price', keyboardType: TextInputType.number, validator: (val) => val!.isEmpty ? 'Required' : null),
+                _buildTextField(controller: controller.floorPlanDescriptionController, label: 'Description', maxLines: 5),
 
-              // _buildTextField(
-              //   controller: controller.bookingAmountController,
-              //   label: 'Booking Amount',
-              //   keyboardType: TextInputType.number,
-              // ),
-              // _buildTextField(
-              //   controller: controller.maintenanceChargesController,
-              //   label: 'Maintenance Charges',
-              //   keyboardType: TextInputType.number,
-              // ),
-              // _buildTextField(
-              //   controller: controller.reraNumberController,
-              //   label: 'RERA Number',
-              // ),
-              Obx(() {
-                final category = controller.selectedCategory.value;
-                if (category == null) return const SizedBox();
-                if (category.propertyCategoryTitle == 'Apartment') {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Apartment Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                        ),
-                      ),
-                      _buildTextField(
-                        controller: controller.totalAreaController,
-                        label: 'Total Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.builtupAreaController,
-                        label: 'Built-up Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.bedroomsController,
-                        label: 'Number of Bedrooms',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.bathroomsController,
-                        label: 'Number of Bathrooms',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.parkingController,
-                        label: 'Parking Availability',
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                    ],
-                  );
-                } else if (category.propertyCategoryTitle == 'Villa') {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Villa Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                        ),
-                      ),
-                      _buildTextField(
-                        controller: controller.villaBuiltupAreaController,
-                        label: 'Built-up Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.villaFloorsController,
-                        label: 'Number of Floors',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.villaGardenController,
-                        label: 'Garden Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                    ],
-                  );
-                } else if (category.propertyCategoryTitle == 'Plot') {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Plot Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                        ),
-                      ),
-                      _buildTextField(
-                        controller: controller.plotAreaController,
-                        label: 'Plot Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.plotLengthController,
-                        label: 'Plot Length (ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.plotWidthController,
-                        label: 'Plot Width (ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.facingDirectionController,
-                        label: 'Facing Direction',
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                    ],
-                  );
-                } else if (category.propertyCategoryTitle == 'Commercial Space') {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Text(
-                          'Commercial Space Details',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary),
-                        ),
-                      ),
-                      _buildTextField(
-                        controller: controller.commercialAreaController,
-                        label: 'Commercial Area (sq.ft.)',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.floorLevelController,
-                        label: 'Floor Level',
-                        keyboardType: TextInputType.number,
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                      _buildTextField(
-                        controller: controller.suitableForController,
-                        label: 'Suitable For',
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-                    ],
-                  );
-                }
-                return const SizedBox();
-              }),
+                Obx(() {
+                  final category = controller.selectedCategory.value;
+                  if (category == null) return const SizedBox();
 
-              const SizedBox(height: 24), // Spacing between sections
+                  if (category.propertyCategoryTitle == 'Apartment') {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(top: 24), child: Text('Apartment Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary))),
+                        _buildTextField(controller: controller.totalAreaController, label: 'Total Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.builtupAreaController, label: 'Built-up Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.bedroomsController, label: 'Number of Bedrooms', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.bathroomsController, label: 'Number of Bathrooms', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.parkingController, label: 'Parking Availability', validator: (v) => v!.isEmpty ? 'Required' : null),
+                      ],
+                    );
+                  } else if (category.propertyCategoryTitle == 'Villa') {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(top: 24), child: Text('Villa Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary))),
+                        _buildTextField(controller: controller.villaBuiltupAreaController, label: 'Built-up Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.villaFloorsController, label: 'Number of Floors', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.villaGardenController, label: 'Garden Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                      ],
+                    );
+                  } else if (category.propertyCategoryTitle == 'Plot') {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(top: 24), child: Text('Plot Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary))),
+                        _buildTextField(controller: controller.plotAreaController, label: 'Plot Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.plotLengthController, label: 'Plot Length (ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.plotWidthController, label: 'Plot Width (ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.facingDirectionController, label: 'Facing Direction', validator: (v) => v!.isEmpty ? 'Required' : null),
+                      ],
+                    );
+                  } else if (category.propertyCategoryTitle == 'Commercial Space') {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(padding: EdgeInsets.only(top: 24), child: Text('Commercial Space Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary))),
+                        _buildTextField(controller: controller.commercialAreaController, label: 'Commercial Area (sq.ft.)', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.floorLevelController, label: 'Floor Level', keyboardType: TextInputType.number, validator: (v) => v!.isEmpty ? 'Required' : null),
+                        _buildTextField(controller: controller.suitableForController, label: 'Suitable For', validator: (v) => v!.isEmpty ? 'Required' : null),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                }),
+                const SizedBox(height: 5),
+                const Text('Location Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
 
-              // Location Details Section
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
-                child: Text(
-                  'Location Details',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
-                ),
-              ),
-              Obx(() {
-                final states = controller.stateController.statesList;
-
-                if (controller.stateController.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-                }
-
-                if (states.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('No states available', style: TextStyle(color: Colors.red)),
-                  );
-                }
-
-                return Padding(
+                Obx(() => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Card(
                     elevation: 4,
                     shadowColor: Colors.grey.withOpacity(0.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: DropdownSearch<StatesModelData>(
-                      items: states,
+                      items: controller.stateController.statesList,
                       selectedItem: controller.selectedState.value,
-                      itemAsString: (state) => state.stateName ?? '',
+                      itemAsString: (s) => s.stateName ?? '',
                       dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
                           labelText: 'Select State',
                           labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                           prefixIcon: Icon(Icons.flag, color: AppColors.secondary),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
-                      popupProps: PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            hintText: 'Search states...',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      onChanged: (value) async {
-                        controller.selectedState.value = value;
+                      popupProps: const PopupProps.menu(showSearchBox: true),
+                      onChanged: (v) async {
+                        controller.selectedState.value = v;
                         controller.selectedDistrict.value = null;
                         controller.selectedMandal.value = null;
                         controller.selectedVillage.value = null;
                         controller.districtController.clearDistricts();
                         controller.mandalController.clearMandals();
                         controller.villageController.clearVillages();
-                        if (value != null) {
-                          await controller.districtController.fetchDistricts(value.id!);
-                        }
+                        if (v != null) await controller.districtController.fetchDistricts(v.id!);
                       },
-                      validator: (value) => value == null ? 'Please select a state' : null,
+                      validator: (v) => v == null ? 'Please select a state' : null,
                     ),
                   ),
-                );
-              }),
-              Obx(() {
-                final selectedState = controller.selectedState.value;
-                final districts = controller.districtController.districtList;
-                final isDistrictLoading = controller.districtController.isLoading.value;
+                )),
 
-                if (selectedState == null) return const SizedBox();
-
-                if (isDistrictLoading) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-                }
-
-                if (districts.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: Text('No districts available', style: TextStyle(color: Colors.red)),
-                  );
-                }
-
-                return Padding(
+                Obx(() => controller.selectedState.value == null
+                    ? const SizedBox()
+                    : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Card(
                     elevation: 4,
                     shadowColor: Colors.grey.withOpacity(0.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: DropdownSearch<DistrictData>(
-                      items: districts,
+                      items: controller.districtController.districtList,
                       selectedItem: controller.selectedDistrict.value,
-                      itemAsString: (DistrictData district) => district.districtName,
-                      popupProps: PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            hintText: 'Search districts...',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
+                      itemAsString: (d) => d.districtName,
                       dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
                           labelText: 'Select District',
                           labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                           prefixIcon: Icon(Icons.location_city, color: AppColors.secondary),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
-                      onChanged: (value) async {
-                        controller.selectedDistrict.value = value;
+                      popupProps: const PopupProps.menu(showSearchBox: true),
+                      onChanged: (v) async {
+                        controller.selectedDistrict.value = v;
                         controller.selectedMandal.value = null;
                         controller.selectedVillage.value = null;
                         controller.mandalController.clearMandals();
                         controller.villageController.clearVillages();
-                        if (value != null && controller.selectedState.value != null) {
+                        if (v != null && controller.selectedState.value != null) {
                           await controller.mandalController.fetchMandals(
                             stateId: controller.selectedState.value!.id!,
-                            districtId: value.id!,
+                            districtId: v.id!,
                           );
                         }
                       },
-                      validator: (value) => value == null ? 'Please select a district' : null,
+                      validator: (v) => v == null ? 'Please select a district' : null,
                     ),
                   ),
-                );
-              }),
-              Obx(() {
-                final selectedDistrict = controller.selectedDistrict.value;
-                final mandals = controller.mandalController.mandalList;
-                final isMandalLoading = controller.mandalController.isLoading.value;
+                )),
 
-                if (selectedDistrict == null || (!isMandalLoading && mandals.isEmpty)) return const SizedBox();
-                if (isMandalLoading) return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-
-                return Padding(
+                Obx(() => controller.selectedDistrict.value == null
+                    ? const SizedBox()
+                    : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Card(
                     elevation: 4,
                     shadowColor: Colors.grey.withOpacity(0.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: DropdownSearch<MandalData>(
-                      items: mandals,
+                      items: controller.mandalController.mandalList,
                       selectedItem: controller.selectedMandal.value,
-                      itemAsString: (MandalData mandal) => mandal.mandalName,
-                      popupProps: PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            hintText: 'Search mandals...',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                      ),
+                      itemAsString: (m) => m.mandalName,
                       dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
                           labelText: 'Select Mandal',
                           labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                           prefixIcon: Icon(Icons.map_outlined, color: AppColors.secondary),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
-                      onChanged: (value) async {
-                        controller.selectedMandal.value = value;
+                      popupProps: const PopupProps.menu(showSearchBox: true),
+                      onChanged: (v) async {
+                        controller.selectedMandal.value = v;
                         controller.selectedVillage.value = null;
                         controller.villageController.clearVillages();
-                        if (value != null &&
-                            controller.selectedState.value != null &&
-                            controller.selectedDistrict.value != null) {
+                        if (v != null && controller.selectedState.value != null && controller.selectedDistrict.value != null) {
                           await controller.villageController.fetchVillages(
                             stateId: controller.selectedState.value!.id!,
                             districtId: controller.selectedDistrict.value!.id!,
-                            mandalId: value.id!,
+                            mandalId: v.id!,
                           );
                         }
                       },
-                      validator: (value) => value == null ? 'Please select a mandal' : null,
+                      validator: (v) => v == null ? 'Please select a mandal' : null,
                     ),
                   ),
-                );
-              }),
-              Obx(() {
-                final selectedMandal = controller.selectedMandal.value;
-                final villages = controller.villageController.villageList;
-                final isVillageLoading = controller.villageController.isLoading.value;
+                )),
 
-                if (selectedMandal == null || (!isVillageLoading && villages.isEmpty)) return const SizedBox();
-                if (isVillageLoading) return const Center(child: CircularProgressIndicator(color: AppColors.secondary));
-
-                return Padding(
+                Obx(() => controller.selectedMandal.value == null
+                    ? const SizedBox()
+                    : Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Card(
                     elevation: 4,
                     shadowColor: Colors.grey.withOpacity(0.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: DropdownSearch<VillageData>(
-                      items: villages,
+                      items: controller.villageController.villageList,
                       selectedItem: controller.selectedVillage.value,
-                      itemAsString: (VillageData village) => village.villageName,
-                      popupProps: PopupProps.menu(
-                        showSearchBox: true,
-                        searchFieldProps: TextFieldProps(
-                          decoration: InputDecoration(
-                            hintText: 'Search villages...',
-                            prefixIcon: Icon(Icons.search),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                        ),
-                      ),
+                      itemAsString: (v) => v.villageName,
                       dropdownDecoratorProps: DropDownDecoratorProps(
                         dropdownSearchDecoration: InputDecoration(
                           labelText: 'Select Village',
                           labelStyle: TextStyle(color: AppColors.secondary.withOpacity(0.8)),
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                           prefixIcon: Icon(Icons.home_outlined, color: AppColors.secondary),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
-                      onChanged: (value) {
-                        controller.selectedVillage.value = value;
-                      },
-                      validator: (value) => value == null ? 'Please select a village' : null,
+                      popupProps: const PopupProps.menu(showSearchBox: true),
+                      onChanged: (v) => controller.selectedVillage.value = v,
+                      validator: (v) => v == null ? 'Please select a village' : null,
                     ),
                   ),
-                );
-              }),
-              _buildTextField(
-                controller: controller.streetNameController,
-                label: 'Street Name',
-              ),
-              // _buildTextField(
-              //   controller: controller.pinCodeController,
-              //   label: 'Pin Code',
-              //   keyboardType: TextInputType.number,
-              //   validator: (val) {
-              //     if (val == null || val.isEmpty) {
-              //       return null;
-              //     }
-              //     if (val.length != 6) {
-              //       return 'Pin Code must be exactly 6 digits';
-              //     }
-              //     return null;
-              //   },
-              //   onChanged: () {
-              //     if (controller.pinCodeController.text.length == 6) {
-              //       controller.fetchCoordinatesFromPincode(controller.pinCodeController.text);
-              //     }
-              //   },
-              // ),
+                )),
 
+                _buildTextField(controller: controller.streetNameController, label: 'Street Name'),
 
-              // const SizedBox(height: 24), // Spacing between sections
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      controller._syncPropertyForController();
+                      controller._syncCategoryController();
+                      controller._syncPropertyStatusController();
 
-              // Floor Plan Details Section
-              // const Padding(
-              //   padding: EdgeInsets.only(bottom: 16.0),
-              //   child: Text(
-              //     'Floor Plan Details',
-              //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
-              //   ),
-              // ),
-              // _buildTextField(
-              //   controller: controller.floorPlanTitleController,
-              //   label: 'Floor Plan Title',
-              //   validator: (val) => val!.isEmpty ? 'Required' : null,
-              // ),
-              // _buildTextField(
-              //   controller: controller.floorPlanAreaController,
-              //   label: 'Floor Plan Area',
-              // ),
-              // _buildTextField(
-              //   controller: controller.floorPlanDescriptionController,
-              //   label: 'Floor Plan Description',
-              //   maxLines: 4,
-              // ),
+                      if (!formKey.currentState!.validate()) return;
 
+                      if (controller.selectedPropertyFor.value == null || controller.selectedCategory.value == null || controller.selectedPropertyStatus.value == null) {
+                        Get.snackbar('Error', 'Please fill all required fields', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
 
-            ],
+                      if (controller.selectedState.value == null || controller.selectedDistrict.value == null || controller.selectedMandal.value == null || controller.selectedVillage.value == null) {
+                        Get.snackbar('Error', 'Please complete location selection', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+
+                      final cat = controller.selectedCategory.value!.propertyCategoryTitle;
+                      if (cat == 'Apartment' && [controller.totalAreaController, controller.builtupAreaController, controller.bedroomsController, controller.bathroomsController, controller.parkingController].any((c) => c.text.isEmpty)) {
+                        Get.snackbar('Error', 'All apartment fields are required', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+                      if (cat == 'Villa' && [controller.villaBuiltupAreaController, controller.villaFloorsController, controller.villaGardenController].any((c) => c.text.isEmpty)) {
+                        Get.snackbar('Error', 'All villa fields are required', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+                      if (cat == 'Plot' && [controller.plotAreaController, controller.plotLengthController, controller.plotWidthController, controller.facingDirectionController].any((c) => c.text.isEmpty)) {
+                        Get.snackbar('Error', 'All plot fields are required', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+                      if (cat == 'Commercial Space' && [controller.commercialAreaController, controller.floorLevelController, controller.suitableForController].any((c) => c.text.isEmpty)) {
+                        Get.snackbar('Error', 'All commercial fields are required', backgroundColor: Colors.red, colorText: Colors.white);
+                        return;
+                      }
+
+                      // Submit property but don't clear form until payment is complete
+                      final success = await controller.submitProperty(formKey);
+                      if (success) {
+                        showPropertyPriceDialog(context, propertyPriceController);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 6,
+                    ),
+                    child: const Text('Preview', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         );
       }),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton(
-          onPressed: () {
-            controller._syncPropertyForController();
-            controller._syncCategoryController();
-            controller._syncPropertyStatusController();
-
-            if (formKey.currentState!.validate()) {
-              if (controller.selectedPropertyFor.value == null || controller.propertyForController.text.isEmpty) {
-                Get.snackbar('Error', 'Property for is required', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              if (controller.selectedCategory.value == null || controller.propertyCategoryController.text.isEmpty) {
-                Get.snackbar('Error', 'Property category is required', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              if (controller.selectedPropertyStatus.value == null || controller.propertyStatusController.text.isEmpty) {
-                Get.snackbar('Error', 'Property status is required', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-
-              if (controller.selectedCategory.value != null) {
-                final categoryTitle = controller.selectedCategory.value!.propertyCategoryTitle;
-                if (categoryTitle == 'Apartment' &&
-                    (controller.totalAreaController.text.isEmpty ||
-                        controller.builtupAreaController.text.isEmpty ||
-                        controller.bedroomsController.text.isEmpty ||
-                        controller.bathroomsController.text.isEmpty ||
-                        controller.parkingController.text.isEmpty)) {
-                  Get.snackbar('Error', 'All apartment details are required', backgroundColor: Colors.red, colorText: Colors.white);
-                  return;
-                } else if (categoryTitle == 'Villa' &&
-                    (controller.villaBuiltupAreaController.text.isEmpty ||
-                        controller.villaFloorsController.text.isEmpty ||
-                        controller.villaGardenController.text.isEmpty)) {
-                  Get.snackbar('Error', 'All villa details are required', backgroundColor: Colors.red, colorText: Colors.white);
-                  return;
-                } else if (categoryTitle == 'Plot' &&
-                    (controller.plotAreaController.text.isEmpty ||
-                        controller.plotLengthController.text.isEmpty ||
-                        controller.plotWidthController.text.isEmpty ||
-                        controller.facingDirectionController.text.isEmpty)) {
-                  Get.snackbar('Error', 'All plot details are required', backgroundColor: Colors.red, colorText: Colors.white);
-                  return;
-                } else if (categoryTitle == 'Commercial Space' &&
-                    (controller.commercialAreaController.text.isEmpty ||
-                        controller.floorLevelController.text.isEmpty ||
-                        controller.suitableForController.text.isEmpty)) {
-                  Get.snackbar('Error', 'All commercial space details are required', backgroundColor: Colors.red, colorText: Colors.white);
-                  return;
-                }
-              }
-
-              if (controller.selectedState.value == null) {
-                Get.snackbar('Error', 'Please select a state', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              if (controller.selectedDistrict.value == null) {
-                Get.snackbar('Error', 'Please select a district', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              if (controller.selectedMandal.value == null) {
-                Get.snackbar('Error', 'Please select a mandal', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              if (controller.selectedVillage.value == null) {
-                Get.snackbar('Error', 'Please select a village', backgroundColor: Colors.red, colorText: Colors.white);
-                return;
-              }
-              // if (controller.pinCodeController.text.isEmpty) {
-              //   Get.snackbar('Error', 'Pin code is required', backgroundColor: Colors.red, colorText: Colors.white);
-              //   return;
-              // }
-
-              showPropertyPriceDialog(context, propertyPriceController);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: const Text(
-            'Preview',
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void showPropertyPriceDialog(BuildContext context, PropertyPriceController propertyPriceController) {
-    showDialog(
-      context: context,
-      builder: (context) => SizedBox(
-        width: 200,
-        child: FutureBuilder<PropertyPricePerDay?>(
-          future: propertyPriceController.fetchPropertyPrices(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                content: const Center(child: CircularProgressIndicator(color: AppColors.secondary)),
-              );
-            }
-            if (snapshot.hasError || snapshot.data == null || snapshot.data!.data == null) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                title: const Text('Error', style: TextStyle(color: AppColors.primary)),
-                content: const Text('Failed to load property prices'),
-                actions: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('OK', style: TextStyle(color: AppColors.secondary)),
-                  ),
-                ],
-              );
-            }
-            final prices = snapshot.data!.data!;
-
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              backgroundColor: Colors.white,
-              elevation: 8,
-              title: const Text(
-                'Property Prices Per Day',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: prices.length,
-                  itemBuilder: (context, index) {
-                    final p = prices[index];
-                    return Card(
-                      elevation: 3,
-                      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      color: Colors.grey[50],
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        title: Text(
-                          'List your property for \ ${p.forDayCharge} per day',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            'description: ${p.description}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                        // trailing: Icon(
-                        //   Icons.arrow_forward_ios,
-                        //   size: 16,
-                        //   color: AppColors.primary,
-                        // ),
-                        // onTap: () {
-                        //
-                        // },
-                      ),
-                    );
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: Colors.grey[200], // Subtle background for cancel
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(
-                      color: AppColors.secondary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Get.back();
-                    Get.to(() => PreviewPropertyScreen());
-                  },
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: AppColors.primary, // Prominent primary color for OK
-                  ),
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(
-                      color: Colors.white, // White text for contrast
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-              actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Consistent padding
-            );
-            },
-        ),
-      ),
     );
   }
 }
 
+void showPropertyPriceDialog(BuildContext context, PropertyPriceController propertyPriceController) {
+  showDialog(
+    context: context,
+    builder: (context) => SizedBox(
+      width: 200,
+      child: FutureBuilder<PropertyPricePerDay?>(
+        future: propertyPriceController.fetchPropertyPrices(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              content: const Center(child: CircularProgressIndicator(color: AppColors.secondary)),
+            );
+          }
+          if (snapshot.hasError || snapshot.data == null || snapshot.data!.data == null) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Text('Error', style: TextStyle(color: AppColors.primary)),
+              content: const Text('Failed to load property prices'),
+              actions: [
+                TextButton(
+                  onPressed: () => Get.back(),
+                  child: const Text('OK', style: TextStyle(color: AppColors.secondary)),
+                ),
+              ],
+            );
+          }
+          final prices = snapshot.data!.data!;
 
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            backgroundColor: Colors.white,
+            elevation: 8,
+            title: const Text(
+              'Property Prices Per Day',
+              style: TextStyle(
+                color: AppColors.primary,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                itemCount: prices.length,
+                itemBuilder: (context, index) {
+                  final p = prices[index];
+                  return Card(
+                    elevation: 3,
+                    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    color: Colors.grey[50],
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      title: Text(
+                        'List your property for \ ${p.forDayCharge} per day',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          'description: ${p.description}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      // trailing: Icon(
+                      //   Icons.arrow_forward_ios,
+                      //   size: 16,
+                      //   color: AppColors.primary,
+                      // ),
+                      // onTap: () {
+                      //
+                      // },
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: Colors.grey[200], // Subtle background for cancel
+                ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: AppColors.secondary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  Get.to(() => PreviewPropertyScreen());
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.primary, // Prominent primary color for OK
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    color: Colors.white, // White text for contrast
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Consistent padding
+          );
+        },
+      ),
+    ),
+  );
+}
+
+//         Preview Property screen with payment
 
 class PreviewPropertyScreen extends StatefulWidget {
   PreviewPropertyScreen({super.key});
@@ -2733,6 +2392,7 @@ class PreviewPropertyScreen extends StatefulWidget {
 
 class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
   late Razorpay _razorpay;
+  String? _selectedPlanId; // Store selected plan ID
 
   @override
   void initState() {
@@ -2749,57 +2409,89 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
     super.dispose();
   }
 
-  /*void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    Fluttertoast.showToast(msg: "Payment Successful: ${response.paymentId}");
-    Get.snackbar('Success', 'Payment successful!', backgroundColor: Colors.green, colorText: Colors.white);
-    Get.offAllNamed('/home');  ////////
-  }*/
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     final controller = Get.find<CreatePropertyController>();
 
+    print('========== RAZORPAY PAYMENT SUCCESS ==========');
+    print('   Complete Payment Response:');
+    print('   Payment ID: ${response.paymentId}');
+    print('   Order ID: ${response.orderId}');
+    print('   Signature: ${response.signature}');
+    print('=============================================');
+
+    // Now we have all three parameters as per documentation
+    String? razorpayPaymentId = response.paymentId;
+    String? razorpayOrderId = response.orderId;
+    String? razorpaySignature = response.signature;
+
+    // Validate all required parameters
+    if (razorpayPaymentId == null || razorpayOrderId == null || razorpaySignature == null) {
+      _handleVerificationFailed('Missing payment details from Razorpay response');
+      return;
+    }
+
+    // Use the stored plan ID
+    if (_selectedPlanId == null || _selectedPlanId!.isEmpty) {
+      _handleVerificationFailed('Plan ID not found. Please try the payment again.');
+      return;
+    }
+
+    print(' Using Plan ID: $_selectedPlanId');
+
     Fluttertoast.showToast(
-      msg: "Payment Successful: ${response.paymentId}",
+      msg: "Payment Successful!",
       backgroundColor: Colors.green,
       textColor: Colors.white,
-      toastLength: Toast.LENGTH_LONG,
     );
-
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('https://madanvasu.in/new/apis/Api_verify/process_payment'),
+    // Send to backend with all three parameters and dynamic plan_id
+    await _sendPaymentToBackend(
+      razorpayOrderId: razorpayOrderId,
+      razorpayPaymentId: razorpayPaymentId,
+      razorpaySignature: razorpaySignature,
+      planId: _selectedPlanId!, // Use the stored plan ID
+      controller: controller,
     );
-
-    // These fields EXACTLY match your working Postman request
-    request.fields.addAll({
-      'razorpay_order_id': response.orderId ?? '',
-      'razorpay_payment_id': response.paymentId ?? '',
-      'razorpay_signature': response.signature ?? '',
-      'customer_id': controller.userId ?? '',           // make sure this is correct
-      'plan_id': '3',            // or '1' — whatever user selected
-      'property_id': controller.propertyId.value ?? '',
-      'test_mode': '1',                                  // working in test mode
-    });
-
-    // THIS IS THE MOST IMPORTANT LINE — DO NOT COMMENT IT!
-    /*request.headers.addAll({
-      'Cookie': 'ci_session=f1b618f9f875d808eb351470566184311786b179', // ← UNCOMMENTED & REQUIRED
-    });*/
-
+  }
+  Future<void> _sendPaymentToBackend({
+    required String razorpayOrderId,
+    required String razorpayPaymentId,
+    required String razorpaySignature,
+    required String planId,
+    required CreatePropertyController controller,
+  }) async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+      print(' Sending payment verification to backend...');
 
-      final streamedResponse = await request.send();
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(EndPoint.processPayment),
+      );
+
+      request.fields.addAll({
+        'razorpay_order_id': razorpayOrderId,
+        'razorpay_payment_id': razorpayPaymentId,
+        'razorpay_signature': razorpaySignature,
+        'customer_id': controller.userId ?? '',
+        'plan_id': planId,
+        'property_id': controller.propertyId.value ?? '',
+        'test_mode': '1',
+      });
+
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 30));
       final responseBody = await streamedResponse.stream.bytesToString();
 
-      print('Status Code: ${streamedResponse.statusCode}');
-      print('Response: $responseBody');
-
-      Get.back(); // close loading
+      Get.back(); // Close loading
 
       if (streamedResponse.statusCode == 200 || streamedResponse.statusCode == 201) {
         final jsonResponse = json.decode(responseBody);
 
         if (jsonResponse['status'] == true) {
+          print(' Payment verification SUCCESSFUL');
+
+          // ONLY clear form after successful payment
+          controller.clearFormAfterSuccessfulPayment();
+
           Get.snackbar(
             'Success!',
             jsonResponse['message'] ?? 'Payment processed successfully!',
@@ -2808,20 +2500,19 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
             duration: const Duration(seconds: 4),
           );
 
-          // Optional: refresh user data
-          // Get.find<CustomerPlanController>().fetchPlans();
-
           Get.offAllNamed('/home');
-          return;
+        } else {
+          print(' Backend verification failed');
+          _handleVerificationFailed('Payment verification failed: ${jsonResponse['message']}');
         }
+      } else {
+        print(' Backend server error');
+        _handleVerificationFailed('Server error: ${streamedResponse.statusCode}');
       }
-
-      // If not success
-      _handleVerificationFailed('Server responded: ${streamedResponse.statusCode}\n$responseBody');
 
     } catch (e) {
       Get.back();
-      print('Exception: $e');
+      print(' Backend call failed: $e');
       _handleVerificationFailed('Network error: $e');
     }
   }
@@ -2838,13 +2529,13 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
     Get.dialog(
       AlertDialog(
         title: const Text('Payment Issue'),
-        content: SelectableText(message), // helps copy debug info
+        content: SelectableText(message),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Close')),
           TextButton(
             onPressed: () {
               Get.back();
-              showPlansDialog(context); // let user retry
+              showPlansDialog(context);
             },
             child: const Text('Retry Payment'),
           ),
@@ -2853,6 +2544,7 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
       barrierDismissible: false,
     );
   }
+
   void _handlePaymentError(PaymentFailureResponse response) {
     Fluttertoast.showToast(msg: "Payment Failed: ${response.message}");
     Get.snackbar('Error', 'Payment failed: ${response.message}', backgroundColor: Colors.red, colorText: Colors.white);
@@ -2863,33 +2555,120 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
     Get.snackbar('Info', 'External wallet selected: ${response.walletName}', backgroundColor: Colors.blue, colorText: Colors.white);
   }
 
-  void _startRazorpayPayment(String amount) {
-    final controller = Get.find<CreatePropertyController>();
-    var options = {
-      'key': 'rzp_test_YUG2xn1ehSty3E',
-      'amount': (double.tryParse(amount) ?? 0) * 100,
-      'name': controller.username ?? 'N/A',
-      'description': 'Property Plan Payment',
-      'prefill': {
-        'contact': controller.mobileNumber ?? 'N/A',
-        'email': controller.email ?? 'N/A',
-      },
-    };
+  // Method to create order before payment
+  Future<String?> createOrder(String amount) async {
     try {
-      _razorpay.open(options);
+      print(' Creating Razorpay Order...');
+      print('   Amount: $amount paise (${int.parse(amount) / 100} INR)');
+
+      final String apiKey = '${EndPoint.razorpayApiKey}';
+      final String apiSecret = '${EndPoint.razorpayKeySecret}';
+
+      final String basicAuth = 'Basic ${base64Encode(utf8.encode('$apiKey:$apiSecret'))}';
+
+      var request = {
+        'amount': amount, // amount in paise
+        'currency': 'INR',
+        'receipt': 'rcpt_${DateTime.now().millisecondsSinceEpoch}',
+        'payment_capture': 1
+      };
+
+      final response = await http.post(
+        Uri.parse('https://api.razorpay.com/v1/orders'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': basicAuth,
+        },
+        body: json.encode(request),
+      ).timeout(const Duration(seconds: 30));
+
+      print('   Razorpay Order API Response:');
+      print('   Status Code: ${response.statusCode}');
+      print('   Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String orderId = responseData['id'];
+        print(' Order Created Successfully: $orderId');
+        return orderId;
+      } else {
+        print('   Order Creation Failed: ${response.statusCode}');
+        print('   Error: ${response.body}');
+        return null;
+      }
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error: $e");
-      Get.snackbar('Error', 'Payment error: $e', backgroundColor: Colors.red, colorText: Colors.white);
+      print(' Order Creation Exception: $e');
+      return null;
     }
   }
 
+  Future<void> _startRazorpayWithOrder(String amount, String planId) async {
+    final controller = Get.find<CreatePropertyController>();
+
+    try {
+      Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+
+      // Fix the amount calculation
+      final String amountInPaise = ((double.tryParse(amount) ?? 0) * 100).toStringAsFixed(0);
+      final String? orderId = await createOrder(amountInPaise);
+
+      if (orderId == null) {
+        Get.back();
+        Get.snackbar(
+          'Error',
+          'Failed to create order. Please try again.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
+      }
+
+      Get.back(); // Close loading
+
+      print(' Proceeding with Order ID: $orderId');
+      print(' Selected Plan ID: $planId');
+
+      // Prepare options for Razorpay checkout
+      var options = {
+        'key': '${EndPoint.razorpayApiKey}',
+        'amount': amountInPaise,
+        'name': controller.username ?? 'Customer',
+        'description': 'Property Plan Payment - Plan ID: $planId',
+        'order_id': orderId,
+        'prefill': {
+          'contact': controller.mobileNumber ?? '9123456789',
+          'email': controller.email ?? 'customer@email.com',
+        },
+        'timeout': 300,
+        'notes': {
+          'plan_id': planId,
+          'property_id': controller.propertyId.value ?? '',
+          'customer_id': controller.userId ?? '',
+        },
+      };
+
+      print(' Opening Razorpay Checkout...');
+      print('   Options: $options');
+
+      _razorpay.open(options);
+
+    } catch (e) {
+      Get.back();
+      print(' Razorpay Payment Error: $e');
+      Get.snackbar(
+        'Error',
+        'Payment initialization failed: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
   final controller = Get.find<CreatePropertyController>();
   final propertyStatusController = Get.find<PropertyStatusController>();
   final categoryController = Get.find<CategoryController>();
   final propertyPlanController = Get.find<PropertyPlanController>();
   final customerPlanController = Get.find<CustomerPlanController>();
   final formKey = GlobalKey<FormState>();
-
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -2945,7 +2724,6 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
           color: Colors.white,
         ),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -2983,10 +2761,10 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                     value: controller.propertyForController.text.isEmpty ||
-                        !['TO Sell', 'TO Rent'].contains(controller.propertyForController.text)
+                        !['Sell', 'Rent'].contains(controller.propertyForController.text)
                         ? null
                         : controller.propertyForController.text,
-                    items: ['TO Sell', 'TO Rent'].map((propertyFor) {
+                    items: ['Sell', 'Rent'].map((propertyFor) {
                       return DropdownMenuItem<String>(
                         value: propertyFor,
                         child: Text(propertyFor),
@@ -3086,30 +2864,11 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
                 keyboardType: TextInputType.number,
                 validator: (val) => val!.isEmpty ? 'Required' : null,
               ),
-
-
               _buildTextField(
                 controller: controller.floorPlanDescriptionController,
                 label: 'Description',
                 maxLines: 4,
               ),
-
-
-              // _buildTextField(
-              //   controller: controller.bookingAmountController,
-              //   label: 'Booking Amount',
-              //   keyboardType: TextInputType.number,
-              // ),
-              // _buildTextField(
-              //   controller: controller.maintenanceChargesController,
-              //   label: 'Maintenance Charges',
-              //   keyboardType: TextInputType.number,
-              // ),
-              // _buildTextField(
-              //   controller: controller.reraNumberController,
-              //   label: 'RERA Number',
-              // ),
-
               Obx(() {
                 final category = controller.selectedCategory.value;
                 if (category == null) return const SizedBox();
@@ -3468,67 +3227,27 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
                 controller: controller.streetNameController,
                 label: 'Street Name',
               ),
-              // _buildTextField(
-              //   controller: controller.pinCodeController,
-              //   label: 'Pin Code',
-              //   keyboardType: TextInputType.number,
-              //   validator: (val) => val!.isEmpty ? 'Required' : null,
-              //   onChanged: () {
-              //     if (controller.pinCodeController.text.length == 6) {
-              //       controller.fetchCoordinatesFromPincode(controller.pinCodeController.text);
-              //     }
-              //   },
-              // ),
-              // _buildTextField(
-              //   controller: controller.longitudeController,
-              //   label: 'Longitude',
-              //   keyboardType: TextInputType.number,
-              //   readOnly: true,
-              // ),
-              // _buildTextField(
-              //   controller: controller.latitudeController,
-              //   label: 'Latitude',
-              //   keyboardType: TextInputType.number,
-              //   readOnly: true,
-              // ),
-              // const SizedBox(height: 16),
-              // const Text(
-              //   'Floor Plan Details',
-              //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
-              // ),
-              // const SizedBox(height: 8),
-              // _buildTextField(
-              //   controller: controller.floorPlanTitleController,
-              //   label: 'Floor Plan Title',
-              // ),
-              // _buildTextField(
-              //   controller: controller.floorPlanAreaController,
-              //   label: 'Floor Plan Area',
-              // ),
-              // _buildTextField(
-              //   controller: controller.floorPlanDescriptionController,
-              //   label: 'Floor Plan Description',
-              //   maxLines: 4,
-              // ),
               const SizedBox(height: 32),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      final success = await controller.submitProperty(formKey);
-                      if (success) {
-                        showPlansDialog(context);
+              SafeArea(
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        final success = await controller.submitProperty(formKey);
+                        if (success) {
+                          showPlansDialog(context);
+                        }
                       }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondary,
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
+                    child: const Text('Submit Property', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
-                  child: const Text('Submit Property', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -3538,23 +3257,24 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
     );
   }
 
-  //----------- Property prices per day to preview ----------------------------
   void showPlansDialog(BuildContext context) {
     final selectedPlanId = RxnString();
     final selectedPlan = Rxn<dynamic>();
+    final propertyPlanController = Get.find<PropertyPlanController>();
+    final customerPlanController = Get.find<CustomerPlanController>(); // Add this
     showDialog(
       context: context,
       builder: (context) => Obx(() {
         if (propertyPlanController.isLoading.value) {
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: const Center(child: CircularProgressIndicator(color: AppColors.secondary)),
+            content: Center(child: CircularProgressIndicator(color: AppColors.secondary)),
           );
         }
         final plans = propertyPlanController.planDaysList;
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Select Plan', style: TextStyle(color: AppColors.primary)),
+          title: Text('Select Plan', style: TextStyle(color: AppColors.primary)),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -3564,15 +3284,18 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
                 final plan = plans[index];
                 return Obx(() => Card(
                   elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  margin: EdgeInsets.symmetric(vertical: 4),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: RadioListTile<String>(
-                    title: Text('${plan.planDays} days', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text('${plan.planDays} days - ₹${plan.totalPrice}',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    //subtitle: Text('Plan ID: ${plan.id}'),
                     value: plan.id!,
                     groupValue: selectedPlanId.value,
                     onChanged: (value) {
                       selectedPlanId.value = value;
                       selectedPlan.value = plan;
+                      _selectedPlanId = value; // Store the selected plan ID
                     },
                     activeColor: AppColors.secondary,
                   ),
@@ -3582,8 +3305,8 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.secondary)),
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: TextStyle(color: AppColors.secondary)),
             ),
             TextButton(
               onPressed: () async {
@@ -3596,6 +3319,7 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
                     return;
                   }
 
+                  // Submit customer plan first
                   await customerPlanController.submitCustomerPlan(
                     propertyId: controller.propertyId.value ?? '',
                     userId: userId,
@@ -3604,13 +3328,20 @@ class _PreviewPropertyScreenState extends State<PreviewPropertyScreen> {
 
                   Get.back();
 
-                  _startRazorpayPayment(selectedPlan.value.totalPrice.toString());
+                  // Store the selected plan ID
+                  _selectedPlanId = selectedPlanId.value;
+
+                  // Start Razorpay payment with order creation
+                  await _startRazorpayWithOrder(
+                    selectedPlan.value.totalPrice.toString(),
+                    selectedPlanId.value ?? '',
+                  );
                 } else {
                   Get.snackbar('Error', 'Please select a plan',
                       backgroundColor: Colors.red, colorText: Colors.white);
                 }
               },
-              child: const Text('OK', style: TextStyle(color: AppColors.secondary)),
+              child: const Text('Proceed to Pay', style: TextStyle(color: AppColors.secondary)),
             ),
           ],
         );

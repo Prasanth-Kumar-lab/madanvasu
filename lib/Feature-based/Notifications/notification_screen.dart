@@ -1,43 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../utils/shared_pref_helper.dart';
 import 'Notification_controller.dart';
-
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
-
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
-
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final NotificationController notificationController =
   Get.put(NotificationController());
-
   String? userId;
   String? username;
   String? email;
   String? mobileNumber;
-
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
-
   Future<void> _loadUserData() async {
     userId = await SharedPrefHelper.getUserData('id');
     username = await SharedPrefHelper.getUserData('personName');
     email = await SharedPrefHelper.getUserData('email');
     mobileNumber = await SharedPrefHelper.getUserData('mobileNumber');
-
     debugPrint("Loaded User Data:");
     debugPrint("User ID: $userId");
     debugPrint("Username: $username");
     debugPrint("Email: $email");
     debugPrint("Mobile: $mobileNumber");
-
     if (userId != null) {
       debugPrint(" Fetching notifications for user_id: $userId");
       await notificationController.fetchNotifications(int.parse(userId!));

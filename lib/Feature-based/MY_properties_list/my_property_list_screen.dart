@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -8,9 +7,6 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:madhanvasu_app/utils/shared_pref_helper.dart';
 import '../../../app/configuration/themes/app_colors.dart';
 import '../SavedProperties/saved_properties_controller.dart';
-import '../home/FeaturedPoperties/featured_property_card.dart';
-import '../post_property_feature/customer_property_plan/customer_plan_controller.dart';
-import '../post_property_feature/post_property_screen.dart';
 import '../post_property_feature/property_plan_days/property_plan_day_controller.dart';
 import '../property_details/property_details.dart';
 import 'my_property_list_controller.dart';
@@ -354,7 +350,7 @@ class _FeaturedPropertyCardState extends State<FeaturedPropertyCard> {
           BoxShadow(
             color: widget.primaryColor.withOpacity(0.08),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),

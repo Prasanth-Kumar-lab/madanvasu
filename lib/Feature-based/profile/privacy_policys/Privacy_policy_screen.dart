@@ -32,34 +32,35 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Html(
-            data: controller.policyContent.value.trim(), // trim whitespace here
-            style: {
-              "body": Style(
-                margin: Margins.zero, // remove default margin on body
-                // padding: Padding.zero, // remove padding on body
-                color: Colors.black87,
-                fontSize: FontSize(16),
-                lineHeight: LineHeight(1.5),
-              ),
-              "p": Style(
-                margin:  Margins.only(bottom: 8), // less space after paragraphs
-                // padding: Padding.zero,
-              ),
-              "h1": Style(
-                margin:  Margins.symmetric(vertical: 12),
-                fontSize: FontSize(24),
-                fontWeight: FontWeight.bold,
-              ),
-              "h2": Style(
-                margin:  Margins.symmetric(vertical: 10),
-                fontSize: FontSize(20),
-                fontWeight: FontWeight.w600,
-              ),
-              "br": Style(
-                // display: Display.NONE,
-              ),
-            },
+          child: SafeArea(
+            child: Html(
+              data: controller.policyContent.value.trim(), // trim whitespace here
+              style: {
+                "body": Style(
+                  margin: Margins.zero, // remove default margin on body
+                  color: Colors.black87,
+                  fontSize: FontSize(16),
+                  lineHeight: LineHeight(1.5),
+                ),
+                "p": Style(
+                  margin:  Margins.only(bottom: 8), // less space after paragraphs
+                  // padding: Padding.zero,
+                ),
+                "h1": Style(
+                  margin:  Margins.symmetric(vertical: 12),
+                  fontSize: FontSize(24),
+                  fontWeight: FontWeight.bold,
+                ),
+                "h2": Style(
+                  margin:  Margins.symmetric(vertical: 10),
+                  fontSize: FontSize(20),
+                  fontWeight: FontWeight.w600,
+                ),
+                "br": Style(
+                  // display: Display.NONE,
+                ),
+              },
+            ),
           ),
         );
       }),

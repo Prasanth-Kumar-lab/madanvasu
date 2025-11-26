@@ -637,15 +637,10 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:madhanvasu_app/Feature-based/property_details/property_details_controller.dart';
 import 'package:madhanvasu_app/Feature-based/property_details/property_details_widget.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:translator/translator.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../data/Api_services/user_api_services.dart';
-import '../../utils/Common_buttons&widgets/AppLoding_widget.dart';
-import '../../utils/Common_buttons&widgets/Custom_bottom_sheet.dart';
 import '../../utils/Common_buttons&widgets/share_option.dart';
 import '../../utils/shared_pref_helper.dart';
-import '../Contact_Us/Contact_us_controller.dart';
 import '../../app/configuration/themes/app_colors.dart';
 import '../Reviews/All_Reviews_list/comments_screen.dart';
 import '../SavedProperties/saved_properties_controller.dart';
@@ -809,7 +804,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFFe57c42)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Property Details',
           style: TextStyle(color: Colors.black),
         ),

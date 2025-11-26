@@ -240,8 +240,6 @@ class _CommentsSectionState extends State<CommentsSection> {
                                       style: const TextStyle(fontSize: 14, color: Colors.black),
                                     ),
                                   ),
-
-
                                   TextButton(
                                     onPressed: () => toggleTranslation(index),
                                     child: Text(

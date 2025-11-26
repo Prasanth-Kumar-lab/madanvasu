@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:madhanvasu_app/Feature-based/home/Rented_properties/Rented_properties_controller.dart';
 import 'package:madhanvasu_app/Feature-based/property_details/property_details.dart';
-import '../../../app/routes/app_pages.dart';
-import '../../../utils/Common_buttons&widgets/AppLoding_widget.dart';
 import '../../../utils/shared_pref_helper.dart';
 import '../../Notifications/Notification_controller.dart';
 import '../../bottam_nav/bottam_navbar_screen.dart';
@@ -15,7 +12,6 @@ import '../../categorys/categorys_controller/categorys_controller.dart';
 import '../Available_properties/Available_properties_controller.dart';
 import '../Available_properties/Available_properties_screen.dart';
 import '../Available_properties/Available_properties_widget.dart';
-import '../FeaturedPoperties/FeaturedProperties_model.dart';
 import '../FeaturedPoperties/Featured_properties_screen.dart';
 import '../FeaturedPoperties/featured_PropertiesController.dart';
 import '../FeaturedPoperties/featured_properties_widget.dart';
@@ -343,6 +339,7 @@ class _HomeTabState extends State<HomeTab> {
   late final TextEditingController _searchController;
   final RxString _searchText = ''.obs;
   final RxBool _showSearchResults = false.obs;
+  final CategoryController categoryController = Get.put(CategoryController());
 
   @override
   void initState() {
@@ -540,13 +537,13 @@ class _HomeTabState extends State<HomeTab> {
     final rentedController = Get.put(Rented_PropertiesController());
     final soldController = Get.put(SoldPropertiesController());
 
+
     return PopScope(
       canPop: true,
       onPopInvoked: (didPop) {
         if (didPop) {}
       },
       child: Scaffold(
-
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: AppBar(
@@ -566,47 +563,7 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                 ),
 
-                const Spacer(),
-
-                //////////Balu
-
-                // FutureBuilder(
-                //   future: Future.wait([
-                //     SharedPrefHelper.getUserData('villageName'),
-                //     SharedPrefHelper.getUserData('mandalName'),
-                //   ]),
-                //   builder: (context, AsyncSnapshot<List<String?>> snapshot) {
-                //     if (!snapshot.hasData) {
-                //       return const Padding(
-                //         padding: EdgeInsets.only(right: 16),
-                //         child: Text('Loading location...'),
-                //       );
-                //     }
-                //
-                //     final village = snapshot.data![0] ?? 'Village';
-                //     final mandal = snapshot.data![1] ?? 'Mandal';
-                //
-                //     return GestureDetector(
-                //       onTap: () {
-                //         locationController.selectLocationFromMap(context);
-                //       },
-                //       child: Padding(
-                //         padding: const EdgeInsets.only(right: 16),
-                //         child: Text(
-                //           '$village, $mandal',
-                //           style: const TextStyle(
-                //             color: Colors.black,
-                //             fontWeight: FontWeight.bold,
-                //             fontSize: 16,
-                //             letterSpacing: 0.5,
-                //           ),
-                //         ),
-                //       ),
-                //     );
-                //   },
-                // ),
-
-                //////////// Balu
+                /*const Spacer(),
 
                 FutureBuilder<String?>(
                   future: SharedPrefHelper.getUserData('personName'),
@@ -614,20 +571,85 @@ class _HomeTabState extends State<HomeTab> {
                     final personName = snapshot.data ?? '';
                     final initial = personName.isNotEmpty ? personName[0].toUpperCase() : '?';
 
+                    return Text('$personName', style: TextStyle(fontWeight: FontWeight.bold),);
+                  },
+                ),
+                const Spacer(),*/
+                const Spacer(),
+            ShaderMask(
+              shaderCallback: (bounds) {
+                return const LinearGradient(
+                  colors: [
+                    Color(0xFFFFEB3B),
+                    Color(0xFFFF9800),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds);
+              },
+              child: Text(
+                'Madanvasu',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // Important! Needed for shader mask
+                ),
+              ),
+            )
+             //shimmer only when page loads
+                .animate()
+                .shimmer(
+              duration: 1500.ms,
+              color: Colors.white,
+            ),
+            const Spacer(),
+                FutureBuilder<String?>(
+                  future: SharedPrefHelper.getUserData('personName'),
+                  builder: (context, snapshot) {
+                    final personName = snapshot.data ?? '';
+                    final initial = personName.isNotEmpty ? personName[0].toUpperCase() : '?';
                     return GestureDetector(
                       onTap: () {
                         Get.toNamed('/profile');
                       },
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 16, left: 8),
-                        child: Text(
-                          '$initial..',
+                          padding: const EdgeInsets.only(right: 16, left: 8),
+                          child: /*Text(
+                          '$initial',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
-                        ),
+                        ),*/
+                          /*Container(
+                          width: 40, // Circle width
+                          height: 40, // Circle height
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: [Colors.blue, Colors.purple], // Gradient colors
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              initial,
+                              style: TextStyle(
+                                color: Colors.white, // Make it visible on gradient
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                          duration: 2000.ms,
+                          color: Colors.white,)*/
+                          Icon(Icons.person_pin, size: 40, color: Colors.deepOrange.shade300,).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                            duration: 2000.ms,
+                            color: Colors.white,)
                       ),
                     );
                   },

@@ -1,8 +1,5 @@
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:madhanvasu_app/Feature-based/home/Available_properties/Available_properties_widget.dart';
-import 'package:madhanvasu_app/Feature-based/home/Sold_properties/sold_properties_screen.dart';
-
 import '../../Feature-based/SavedProperties/saved_properties_controller.dart';
 import '../../data/Api_services/user_api_services.dart';
 

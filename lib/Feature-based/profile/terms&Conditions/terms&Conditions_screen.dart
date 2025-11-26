@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:madhanvasu_app/Feature-based/profile/terms&Conditions/terms&Conditions_controller.dart';
-
 import '../../../app/configuration/themes/app_colors.dart';
 
 class TermsConditionsScreen extends StatelessWidget {
@@ -24,18 +23,20 @@ class TermsConditionsScreen extends StatelessWidget {
         }
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Html(
-            data: controller.termsContent.value,
-            style: {
-              "p": Style(
-                margin: Margins.zero,
-                lineHeight: LineHeight.number(1.2),
-              ),
-              "br": Style(
-                margin: Margins.zero,
+          child: SafeArea(
+            child: Html(
+              data: controller.termsContent.value,
+              style: {
+                "p": Style(
+                  margin: Margins.zero,
+                  lineHeight: LineHeight.number(1.2),
+                ),
+                "br": Style(
+                  margin: Margins.zero,
 
-              ),
-            },
+                ),
+              },
+            ),
           ),
         );
       }),

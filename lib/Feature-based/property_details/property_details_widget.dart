@@ -94,61 +94,62 @@ class _PropertyViewState extends State<PropertyView> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          sectionTitle("Property Details"),
-          DetailRow(label: "Title", value: property.title ?? "-"),
-          DetailRow(label: "Price", value: property.price ?? "-"),
-          DetailRow(label: "Property Type", value: categoryTitle),
-          DetailRow(label: "Property For", value: property.propertyFor ?? "-"),
-          // DetailRow(label: "Property Status", value: property.propertyStatusId ?? "-"),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sectionTitle("Property Details"),
+            DetailRow(label: "Title", value: property.title ?? "-"),
+            DetailRow(label: "Price", value: property.price ?? "-"),
+            DetailRow(label: "Property Type", value: categoryTitle),
+            DetailRow(label: "Property For", value: property.propertyFor ?? "-"),
+            // DetailRow(label: "Property Status", value: property.propertyStatusId ?? "-"),
+            if (categoryTitle == 'Apartment') ...[
+              DetailRow(label: "Total Area", value: "${property.totalArea ?? '-'} Sq Ft"),
+              DetailRow(label: "Built-up Area", value: "${property.builtupArea ?? '-'} Sq Ft"),
+              DetailRow(label: "Bedrooms", value: property.bedrooms ?? "-"),
+              DetailRow(label: "Bathrooms", value: property.bathrooms ?? "-"),
+              DetailRow(label: "Parking", value: property.parking ?? "-"),
+            ] else if (categoryTitle == 'Villa') ...[
+              DetailRow(label: "Villa Built-up Area", value: "${property.villaBuiltupArea ?? '-'} Sq Ft"),
+              DetailRow(label: "Villa Floors", value: property.villaFloors ?? "-"),
+              DetailRow(label: "Villa Garden", value: "${property.villaGarden ?? '-'} Sq Ft"),
+            ] else if (categoryTitle == 'Plot') ...[
+              DetailRow(label: "Plot Area", value: "${property.plotArea ?? '-'} Sq Ft"),
+              DetailRow(label: "Plot Length", value: property.plotLength ?? "-"),
+              DetailRow(label: "Plot Width", value: property.plotWidth ?? "-"),
+              DetailRow(label: "Facing Direction", value: property.facingDirection ?? "-"),
+            ] else if (categoryTitle == 'Commercial Space') ...[
+              DetailRow(label: "Commercial Area", value: "${property.commercialArea ?? '-'} Sq Ft"),
+              DetailRow(label: "Floor Level", value: property.floorLevel ?? "-"),
+              DetailRow(label: "Suitable For", value: property.suitableFor ?? "-"),
+            ],
 
-          if (categoryTitle == 'Apartment') ...[
-            DetailRow(label: "Total Area", value: "${property.totalArea ?? '-'} Sq Ft"),
-            DetailRow(label: "Built-up Area", value: "${property.builtupArea ?? '-'} Sq Ft"),
-            DetailRow(label: "Bedrooms", value: property.bedrooms ?? "-"),
-            DetailRow(label: "Bathrooms", value: property.bathrooms ?? "-"),
-            DetailRow(label: "Parking", value: property.parking ?? "-"),
-          ] else if (categoryTitle == 'Villa') ...[
-            DetailRow(label: "Villa Built-up Area", value: "${property.villaBuiltupArea ?? '-'} Sq Ft"),
-            DetailRow(label: "Villa Floors", value: property.villaFloors ?? "-"),
-            DetailRow(label: "Villa Garden", value: "${property.villaGarden ?? '-'} Sq Ft"),
-          ] else if (categoryTitle == 'Plot') ...[
-            DetailRow(label: "Plot Area", value: "${property.plotArea ?? '-'} Sq Ft"),
-            DetailRow(label: "Plot Length", value: property.plotLength ?? "-"),
-            DetailRow(label: "Plot Width", value: property.plotWidth ?? "-"),
-            DetailRow(label: "Facing Direction", value: property.facingDirection ?? "-"),
-          ] else if (categoryTitle == 'Commercial Space') ...[
-            DetailRow(label: "Commercial Area", value: "${property.commercialArea ?? '-'} Sq Ft"),
-            DetailRow(label: "Floor Level", value: property.floorLevel ?? "-"),
-            DetailRow(label: "Suitable For", value: property.suitableFor ?? "-"),
+            DetailRow(label: "Street", value: property.streetName ?? "-"),
+            DetailRow(label: "Village", value: getVillageName(property.villageId)),
+            DetailRow(label: "Mandal", value: getMandalName(property.mandalId)),
+            DetailRow(label: "District", value: getDistrictName(property.districtId)),
+            DetailRow(label: "State", value: getStateName(property.stateId)),
+            DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
+
+            DetailRow(label: "Pincode", value: property.pinCode ?? "-"),
+            const SizedBox(height: 22),
+
+            // sectionTitle("Additional Details"),
+            // DetailRow(label: "Booking Amount", value: property.bookingAmount ?? "-"),
+            // DetailRow(label: "Maintenance Charges", value: property.maintenanceCharges ?? "-"),
+            // DetailRow(label: "RERA Number", value: property.reraNumber ?? "-"),
+            // DetailRow(label: "Floor Plan Title", value: property.floorPlanTitle ?? "-"),
+            // DetailRow(label: "Floor Plan Area", value: "${property.floorPlanArea ?? '-'} Sqft"),
+            // DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
+            // const SizedBox(height: 22),
+
+            sectionTitle("Agent / Entry Info"),
+            DetailRow(label: "Person Name", value: property.personName ?? "-"),
+            DetailRow(label: "Person Number", value: property.personNumber ?? "-"),
+            DetailRow(label: "Added On", value: property.addedDateTime ?? "-"),
           ],
-
-          DetailRow(label: "Street", value: property.streetName ?? "-"),
-          DetailRow(label: "Village", value: getVillageName(property.villageId)),
-          DetailRow(label: "Mandal", value: getMandalName(property.mandalId)),
-          DetailRow(label: "District", value: getDistrictName(property.districtId)),
-          DetailRow(label: "State", value: getStateName(property.stateId)),
-          DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
-
-          DetailRow(label: "Pincode", value: property.pinCode ?? "-"),
-          const SizedBox(height: 22),
-
-          // sectionTitle("Additional Details"),
-          // DetailRow(label: "Booking Amount", value: property.bookingAmount ?? "-"),
-          // DetailRow(label: "Maintenance Charges", value: property.maintenanceCharges ?? "-"),
-          // DetailRow(label: "RERA Number", value: property.reraNumber ?? "-"),
-          // DetailRow(label: "Floor Plan Title", value: property.floorPlanTitle ?? "-"),
-          // DetailRow(label: "Floor Plan Area", value: "${property.floorPlanArea ?? '-'} Sqft"),
-          // DetailRow(label: "Floor Plan Description", value: property.floorPlanDescription ?? "-"),
-          // const SizedBox(height: 22),
-
-          sectionTitle("Agent / Entry Info"),
-          DetailRow(label: "Person Name", value: property.personName ?? "-"),
-          DetailRow(label: "Person Number", value: property.personNumber ?? "-"),
-          DetailRow(label: "Added On", value: property.addedDateTime ?? "-"),
-        ],
+        ),
       ),
     );
   }

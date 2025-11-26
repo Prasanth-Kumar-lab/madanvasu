@@ -69,46 +69,55 @@
 ///////////////
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:madhanvasu_app/Feature-based/post_property_feature/customer_property_plan/customer_plan_controller.dart';
+import 'package:madhanvasu_app/Feature-based/post_property_feature/property_plan_days/property_plan_day_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'Feature-based/Landing_screens/landing_screen1.dart';
 import 'Feature-based/app_Language/app_translations.dart';
+import 'Feature-based/categorys/categorys_controller/categorys_controller.dart';
 import 'Feature-based/splash_screen/splashscreen.dart';
 import 'app/configuration/themes/app_colors.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'Feature-based/home/home/home_page.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('Background message received: ${message.messageId}');
 }
-
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // In main.dart or before navigating to CreateProperty_Screen
+  Get.put(PropertyPlanController());
+  Get.put(CustomerPlanController());
+  Get.lazyPut(() => CategoryController());
   await Firebase.initializeApp();
-
+  await PropertyPlanController();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   await _initializeFCM();
-
-  runApp(const MyApp());
+  await Permission.notification.request();
+  await Permission.phone.request();
+  await Permission.sms.request();
+  await Permission.location.request();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
+    ),
+  );
+  runApp( MyApp());
 }
-
-
 Future<void> _initializeFCM() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     badge: true,
     sound: true,
   );
-
   if (settings.authorizationStatus == AuthorizationStatus.authorized ||
       settings.authorizationStatus == AuthorizationStatus.provisional) {
     String? token = await messaging.getToken();
@@ -116,7 +125,6 @@ Future<void> _initializeFCM() async {
   } else {
     print('Notification permission not granted');
   }
-
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print(' Foreground message: ${message.notification?.title}');
     if (message.notification != null) {
@@ -129,61 +137,47 @@ Future<void> _initializeFCM() async {
       );
     }
   });
-
   // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
   //   print(' Notification tapped (app resumed): ${message.notification?.title}');
   //   // Add navigation logic here if needed
   // });
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-
       ControllerHelper.initializeControllers();
-
     return GetMaterialApp(
-
       title: 'Madanvasu App',
       translations: AppTranslations(),
       locale: const Locale('en', 'US'),
-      fallbackLocale: const Locale('en', 'US'), ///////////////
+      fallbackLocale: const Locale('en', 'US'),
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.decide,
       getPages: AppPages.pages,
     );
   }
 }
-
-
 class DecideScreen extends StatefulWidget {
   const DecideScreen({super.key});
-
   @override
   State<DecideScreen> createState() => _DecideScreenState();
 }
-
 class _DecideScreenState extends State<DecideScreen> {
   bool? isLoggedIn;
-
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
   }
-
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     bool loggedIn = prefs.getBool('isLoggedIn') ?? false;
-
     setState(() {
       isLoggedIn = loggedIn;
     });
   }
-
   Future<bool> _onWillPop() async {
     return await Get.dialog(
       AlertDialog(
@@ -249,7 +243,6 @@ class _DecideScreenState extends State<DecideScreen> {
       ),
     ) ?? false;
   }
-
   @override
   Widget build(BuildContext context) {
     if (isLoggedIn == null) {

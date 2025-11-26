@@ -24,27 +24,29 @@ class AboutUsScreen extends StatelessWidget {
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (controller.aboutTitle.isNotEmpty)
-                Text(
-                  controller.aboutTitle.value,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              const SizedBox(height: 10),
-              if (controller.aboutImage.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    'https://madanvasu.in/new/assets/backend/about/${controller.aboutImage.value}',
-                    errorBuilder: (context, error, stackTrace) =>
-                    const Text('Image could not be loaded'),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (controller.aboutTitle.isNotEmpty)
+                  Text(
+                    controller.aboutTitle.value,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-              const SizedBox(height: 16),
-              Html(data: controller.aboutDescription.value),
-            ],
+                const SizedBox(height: 10),
+                if (controller.aboutImage.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      'https://madanvasu.in/new/assets/backend/about/${controller.aboutImage.value}',
+                      errorBuilder: (context, error, stackTrace) =>
+                      const Text('Image could not be loaded'),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                Html(data: controller.aboutDescription.value),
+              ],
+            ),
           ),
         );
       }),
